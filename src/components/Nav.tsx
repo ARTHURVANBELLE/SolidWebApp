@@ -6,8 +6,8 @@ export default function Nav() {
   const active = (path: string) =>
     path == location.pathname ? "border-sky-600" : "border-transparent hover:border-sky-600";
   return (
-    <nav class="flex justify-between items-center w-full p-4">
-      <ul class="flex">
+  <nav class="flex justify-between items-center w-full p-4 bg-red-500">
+    <ul class="flex">
         <NavLink href="/">Home</NavLink>
         <NavLink href="/new-activity">New Activity</NavLink>
         <NavLink href="/about">About</NavLink>

@@ -20,7 +20,7 @@ export function TextInput(props: TextInputProps) {
     <div>
       {props.label && (
         <label for={props.name}>
-          {props.label} {props.required && <span>*</span>}
+          {props.label} {props.required && <span> * </span>}
         </label>
       )}
       <input

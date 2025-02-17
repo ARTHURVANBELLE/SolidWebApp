@@ -1,9 +1,11 @@
 import { createSignal } from "solid-js";
 import { TextInput } from "~/components/TextInput";
+import { useNavigate } from "@solidjs/router";
 
 export default function NewActivity() {
   const [title, setTitle] = createSignal("");
   const [error, setError] = createSignal("");
+  const navigate = useNavigate();
 
   const handleInput = (event: InputEvent) => {
     setTitle((event.target as HTMLInputElement).value);
@@ -41,6 +43,7 @@ export default function NewActivity() {
           <button
             type="submit"
             disabled={!!error()}
+            onClick={() => navigate("/member-selection")} // Redirect to home page
             class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Submit

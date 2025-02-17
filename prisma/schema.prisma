@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Comment {
+  id Int @id @default (autoincrement())
+  text String
+  activityId Int
+  activity Activity @relation(fields: [activityId], references: [id])
+}
+
+model Activity {
+  id Int @id @default(autoincrement())
+  title String
+  users ActivitiesOnUsers[] // Many-to-many relation
+  comments Comment[]
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  firstName String
+  lastName String
+  email String
+  password String
+  activities ActivitiesOnUsers[] // Many-to-many relation
+}
+
+model ActivitiesOnUsers {
+  userId Int
+  activityId Int
+  user User @relation(fields: [userId], references: [id])
+  activity Activity @relation(fields: [activityId], references: [id])
+
+  @@id([userId, activityId]) // Composite primary key
+}

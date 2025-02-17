@@ -1,12 +1,11 @@
 import { createSignal, createEffect, For } from "solid-js";
 
 type User = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
 
 export default function UserList() {
   const [users, setUsers] = createSignal<User[]>([]);
@@ -27,7 +26,7 @@ export default function UserList() {
       <ul>
         <For each={users()}>
           {(user, index) => (
-            <li key={index()} class="border p-2 my-2 rounded">
+            <li class="border p-2 my-2 rounded">
               {user.firstName} {user.lastName} - {user.email}
             </li>
           )}

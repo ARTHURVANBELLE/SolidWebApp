@@ -1,5 +1,6 @@
 import { db } from "~/lib/db"; // Import your Prisma instance
-import { APIEvent } from "solid-start"; // Solid API handler
+import { APIEvent } from "@solidjs/start/server"; // Solid API handler
+//import { APIEvent } from "@solid-start/server"; // Solid API handler
 
 export async function GET(event: APIEvent) {
   try {

@@ -8,8 +8,9 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
-    "@solidjs/router": "^0.15.0",
+    "@solidjs/router": "^0.15.3",
     "@solidjs/start": "^1.1.1",
+    "bcrypt": "^5.1.1",
     "solid-js": "^1.9.4",
     "vinxi": "^0.5.3",
     "zod": "^3.24.2"

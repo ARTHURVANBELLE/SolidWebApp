@@ -1,10 +1,10 @@
-import { db } from "~/lib/db"; // Import your Prisma instance
+import { db } from "~/lib/db";
 import { APIEvent } from "@solidjs/start/server";
 import bcrypt from "bcrypt";
 
 export async function GET(event: APIEvent) {
   try {
-    const users = await db.user.findMany(); // Fetch users from database
+    const users = await db.user.findMany();
     return new Response(JSON.stringify(users), {
       headers: { "Content-Type": "application/json" },
     });
@@ -18,7 +18,7 @@ export async function GET(event: APIEvent) {
 
 export async function POST(event: APIEvent) {
   try {
-    const body = await event.request.json(); // Parse JSON request body
+    const body = await event.request.json();
 
     // Hash the password before storing
     const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -28,7 +28,7 @@ export async function POST(event: APIEvent) {
         firstName: body.firstName,
         lastName: body.lastName,
         email: body.email,
-        password: hashedPassword, // Store hashed password
+        password: hashedPassword,
       },
     });
 

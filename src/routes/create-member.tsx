@@ -1,16 +1,21 @@
 import { createSignal } from "solid-js";
 import { TextInput } from "~/components/TextInput";
 import { useNavigate } from "@solidjs/router";
+import { addUser } from "~/lib/users";
 
 export default function NewActivity() {
   const [name, setName] = createSignal("");
+  const [lastName, setLastName] = createSignal("");
   const [email, setEmail] = createSignal("");
   const [password, setPassword] = createSignal("");
+
   const [errorName, setErrorName] = createSignal("");
   const [errorLastName, setErrorLastName] = createSignal("");
   const [errorEmail, setErrorEmail] = createSignal("");
   const [errorPassword, setErrorPassword] = createSignal("");
-  const [lastName, setLastName] = createSignal("");
+
+  const [success, setSuccess] = createSignal("");
+  const [error, setError] = createSignal("");
 
   const navigate = useNavigate();
 
@@ -30,6 +35,32 @@ export default function NewActivity() {
         setError("");
       }
     };
+
+  const handleSubmit = async () => {
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: name(),
+          lastName: lastName(),
+          email: email(),
+          password: password(),
+        }),
+      });
+      const user = await addUser({})
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+
+      setSuccess("User created successfully!");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    }
+  };
 
   let inputRef: HTMLInputElement | undefined;
 
@@ -104,10 +135,12 @@ export default function NewActivity() {
               !!errorEmail() ||
               !!errorPassword()
             }
-            onClick={() => navigate("/member-selection")} // Redirect to home page
-            class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            onClick={handleSubmit}
+            class="bg-blue-500 text-white px-4 py-2 rounded"
           >
-            Submit
+            class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg
+            transition hover:bg-red-600 disabled:bg-gray-300
+            disabled:cursor-not-allowed" Submit
           </button>
         </form>
       </div>

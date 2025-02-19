@@ -5,13 +5,13 @@ type TextInputProps = {
   type: "text" | "email" | "tel" | "password" | "url" | "date";
   label?: string;
   placeholder?: string;
-  value: string | undefined;
-  error: string;
+  value?: string;
+  error?: string;
   required?: boolean;
-  ref: (element: HTMLInputElement) => void;
-  onInput: JSX.EventHandler<HTMLInputElement, InputEvent>;
-  onChange: JSX.EventHandler<HTMLInputElement, Event>;
-  onBlur: JSX.EventHandler<HTMLInputElement, FocusEvent>;
+  ref?: (element: HTMLInputElement) => void;
+  onInput?: JSX.EventHandler<HTMLInputElement, InputEvent>;
+  onChange?: JSX.EventHandler<HTMLInputElement, Event>;
+  onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent>;
 };
 
 export function TextInput(props: TextInputProps) {
@@ -26,6 +26,7 @@ export function TextInput(props: TextInputProps) {
       <input
         {...inputProps}
         id={props.name}
+        name={props.name}
         value={props.value || ""}
         aria-invalid={!!props.error}
         aria-errormessage={`${props.name}-error`}

@@ -11,10 +11,6 @@ export default function Home() {
         Hello world!
       </h1>
       <UserList />
-      <p class="my-4">
-        <span>Home</span>
-        {" - "}
-      </p>
     </main>
   );
 }

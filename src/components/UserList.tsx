@@ -5,6 +5,7 @@ type User = {
   firstName: string;
   lastName: string;
   email: string;
+  team: string;
 };
 
 export default function UserList() {

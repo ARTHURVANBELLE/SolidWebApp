@@ -17,11 +17,10 @@ export default function NewActivity() {
           />
 
           {/* Submit Button */}
-          <input
+          <button
             type="submit"
-            value="Submit"
             class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          />
+          >Submit</button>
         </form>
       </div>
     </main>

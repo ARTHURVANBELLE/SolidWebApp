@@ -1,11 +1,12 @@
 import { db } from "./db";
-import {query} from "@solidjs/router"
 import {z} from 'zod'
+import {action, redirect, query, reload} from "@solidjs/router"
 
 const userSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     email: z.string().email(),
+    team: z.string(),
     password: z.string().min(8)
 })
 
@@ -16,14 +17,20 @@ export const getUsers = query(async () => {
     return db.user.findMany();
 }, 'getUsers')
 
-export const addUser = query(async (formData: FormData) => {
-    'use server'
+export const addUser = async (formData: FormData) => {
+    //'use server'
     const newuser = userSchema.parse({
-        firstName: formData.get('firstName') as string,
-        lastName: formData.get('lastName') as string,
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
+        firstName: formData.get('firstName') as String,
+        lastName: formData.get('lastName') as String,
+        email: formData.get('email') as String,
+        team: formData.get('team') as String,
+        password: formData.get('password') as String,
     })
 
     return db.user.create({ data: newuser})
-}, 'addUser')
+}
+
+export const addUserAction = action(async (form: FormData) => {
+    'use server'
+    await addUser(form)
+}, 'addUserAction');

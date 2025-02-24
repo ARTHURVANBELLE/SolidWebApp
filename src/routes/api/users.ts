@@ -28,6 +28,7 @@ export async function POST(event: APIEvent) {
         firstName: body.firstName,
         lastName: body.lastName,
         email: body.email,
+        team: body.team,
         password: hashedPassword,
       },
     });

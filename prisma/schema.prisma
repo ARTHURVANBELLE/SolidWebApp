@@ -30,6 +30,7 @@ model User {
   lastName String
   email String
   password String
+  team String
   activities ActivitiesOnUsers[] // Many-to-many relation
 }
 

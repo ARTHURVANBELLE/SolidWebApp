@@ -1,7 +1,12 @@
 import { TextInput } from "~/components/TextInput";
 import { addUserAction } from "~/lib/users";
+import { createSelector, createSignal } from "solid-js";
+import TeamSelect from "~/components/TeamSelect";
 
 export default function NewMember() {
+  const [selectedId, setSelectedId] = createSignal();
+  const isSelected = createSelector(selectedId);
+
   return (
     <main class="flex flex-col items-center justify-center min-h-fit">
       <h1 class="text-5xl text-sky-700 font-bold uppercase my-8">
@@ -31,6 +36,7 @@ export default function NewMember() {
             required
           />
           <TextInput name="team" type="text" placeholder="Team" required />
+          <TeamSelect></TeamSelect>
 
           {/* Submit Button */}
           <button

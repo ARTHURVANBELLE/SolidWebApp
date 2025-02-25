@@ -30,31 +30,29 @@ export default function NewActivity() {
         Create a New Activity
       </h1>
 
-      <div class="max-w-4xl mx-auto p-4">
+      <div class="w-screen max-w-full h-screen p-20">
         <Slider>
-          <div class="keen-slider__slide bg-blue-100 h-64 flex items-center justify-center">
-            <div class="bg-gray-100 shadow-lg rounded-2xl p-8 w-full max-w-md">
-              <form
-                method="post"
-                action={addActivityAction}
-                class="flex flex-col gap-4"
-              >
-                <TextInput
-                  name="title"
-                  type="text"
-                  placeholder="Enter activity title"
-                  required={true}
-                />
+          <div class="keen-slider__slide bg-blue-200 h-64 flex items-center justify-center">
+            <form
+              method="post"
+              action={addActivityAction}
+              class="flex flex-col gap-4"
+            >
+              <TextInput
+                name="title"
+                type="text"
+                placeholder="Enter activity title"
+                required={true}
+              />
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Submit
+              </button>
+            </form>
           </div>
           <div class="keen-slider__slide bg-green-100 h-64 flex items-center justify-center">
             Slide 2

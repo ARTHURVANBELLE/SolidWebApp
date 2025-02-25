@@ -1,9 +1,15 @@
-// TeamDropdown.tsx
+// TeamSelect.tsx
 import { createSignal, onMount } from "solid-js";
 
 type Team = {
   id: number;
   name: string;
+};
+
+type TeamSelectProps = {
+  name: string;
+  required?: boolean;
+  defaultValue?: number;
 };
 
 // Server action to fetch teams
@@ -25,8 +31,8 @@ async function getTeams() {
   }
 }
 
-export default function TeamDropdown() {
-  const [selectedId, setSelectedId] = createSignal<number | null>(null);
+export default function TeamSelect(props: TeamSelectProps) {
+  const [selectedId, setSelectedId] = createSignal<number | null>(props.defaultValue || null);
   const [teams, setTeams] = createSignal<Team[]>([]);
   const [isOpen, setIsOpen] = createSignal(false);
   const [loading, setLoading] = createSignal(true);
@@ -38,7 +44,7 @@ export default function TeamDropdown() {
   // Close dropdown when clicking outside
   const handleClickOutside = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (!target.closest('.dropdown-container')) {
+    if (!target.closest('.team-dropdown-container')) {
       setIsOpen(false);
     }
   };
@@ -70,9 +76,18 @@ export default function TeamDropdown() {
   });
 
   return (
-    <div class="relative dropdown-container">
+    <div class="relative team-dropdown-container">
+      {/* Hidden input field to store the selected value for form submission */}
+      <input 
+        type="hidden" 
+        name={props.name} 
+        value={selectedId() || ''} 
+        required={props.required}
+      />
+      
       <button 
-        class="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between w-48"
+        type="button" // Important: use type="button" to prevent form submission on click
+        class="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between w-full"
         onClick={(e) => {
           e.stopPropagation();
           toggleDropdown();
@@ -109,6 +124,11 @@ export default function TeamDropdown() {
             <li class="px-4 py-2 text-gray-500">No teams available</li>
           )}
         </ul>
+      )}
+      
+      {/* Validation message */}
+      {props.required && !selectedId() && (
+        <p class="text-xs text-red-500 mt-1">Please select a team</p>
       )}
     </div>
   );

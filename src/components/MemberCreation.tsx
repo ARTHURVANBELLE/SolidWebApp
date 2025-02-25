@@ -35,8 +35,7 @@ export default function NewMember() {
             placeholder="password"
             required
           />
-          <TextInput name="team" type="text" placeholder="Team" required />
-          <TeamSelect></TeamSelect>
+          <TeamSelect name="team" required></TeamSelect>
 
           {/* Submit Button */}
           <button

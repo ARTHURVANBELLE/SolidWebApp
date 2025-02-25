@@ -2,31 +2,27 @@ import { db } from "./db";
 import {z} from 'zod'
 import {action, query} from "@solidjs/router"
 
-const userSchema = z.object({
-    Name: z.string(),
+const teamSchema = z.object({
+    name: z.string(),
 })
 
 type Type = z.infer<typeof teamSchema>
 
-export const getUsers = query(async () => {
+export const getTeams = query(async () => {
     "use server";
-    return db.user.findMany();
-}, 'getUsers')
+    return db.team.findMany();
+}, 'getTeams')
 
-export const addUser = async (formData: FormData) => {
-    //'use server'
-    const newuser = userSchema.parse({
-        firstName: formData.get('firstName') as String,
-        lastName: formData.get('lastName') as String,
-        email: formData.get('email') as String,
-        team: formData.get('team') as String,
-        password: formData.get('password') as String,
+export const addTeam = async (formData: FormData) => {
+    'use server'
+    const newteam = teamSchema.parse({
+        name: formData.get('name') as String,
     })
 
-    return db.user.create({ data: newuser})
+    return db.team.create({ data: { name: newteam.name } })
 }
 
-export const addUserAction = action(async (form: FormData) => {
+export const addTeamAction = action(async (form: FormData) => {
     'use server'
-    await addUser(form)
-}, 'addUserAction');
+    await addTeam(form)
+}, 'addTeamAction');

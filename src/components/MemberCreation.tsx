@@ -1,11 +1,9 @@
-import { createSignal } from "solid-js";
 import { TextInput } from "~/components/TextInput";
-import { useNavigate } from "@solidjs/router";
 import { addUserAction } from "~/lib/users";
 
-export default function NewActivity() {
+export default function NewMember() {
   return (
-    <main class="flex flex-col items-center justify-center min-h-screen bg-white">
+    <main class="flex flex-col items-center justify-center min-h-fit">
       <h1 class="text-5xl text-sky-700 font-bold uppercase my-8">
         Create a New User
       </h1>
@@ -16,13 +14,13 @@ export default function NewActivity() {
           <TextInput
             name="firstName"
             type="text"
-            placeholder="firstName"
+            placeholder="first name"
             required
           />
           <TextInput
             name="lastName"
             type="text"
-            placeholder="lastName"
+            placeholder="last name"
             required
           />
           <TextInput name="email" type="email" placeholder="mail" required />
@@ -32,12 +30,7 @@ export default function NewActivity() {
             placeholder="password"
             required
           />
-          <TextInput
-            name="team"
-            type="text"
-            placeholder="team"
-            required
-          />
+          <TextInput name="team" type="text" placeholder="Team" required />
 
           {/* Submit Button */}
           <button

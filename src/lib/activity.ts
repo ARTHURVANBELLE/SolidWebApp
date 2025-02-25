@@ -12,7 +12,7 @@ async function addActivity(activityName: string) {
 
 export const addActivityAction = action(async (form: FormData) => {
     'use server'
-    //await addActivity(form.get("title") as string);
-    //console.log("addActivityAction:", addActivityAction);
-    redirect("/member-selection");
+    await addActivity(form.get("title") as string);
+    console.log("addActivityAction:", addActivityAction);
+    //redirect("/member-selection");
 }, 'addActivityAction');

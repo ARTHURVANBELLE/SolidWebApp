@@ -2,7 +2,7 @@ import { redirect, useNavigate } from "@solidjs/router";
 import { TextInput } from "~/components/TextInput";
 import { addActivityAction } from "~/lib/activity";
 import Slider from "~/components/Slider";
-import UserList from "~/components/UserList";
+import UserList from "~/components/MemberList";
 import Slide from "~/components/Slide";
 
 export default function NewActivity() {
@@ -36,7 +36,7 @@ export default function NewActivity() {
                 type="submit"
                 class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                Submit
+                Next
               </button>
             </form>
           </Slide>

@@ -2,37 +2,23 @@ import { redirect, useNavigate } from "@solidjs/router";
 import { TextInput } from "~/components/TextInput";
 import { addActivityAction } from "~/lib/activity";
 import Slider from "~/components/Slider";
+import UserList from "~/components/UserList";
+import Slide from "~/components/Slide";
 
 export default function NewActivity() {
   const navigate = useNavigate();
-  /*
-  async function handleSubmit(event: Event) {
-    event.preventDefault(); // Prevent default form submission
-    const formData = new FormData(event.currentTarget as HTMLFormElement);
-
-    try {
-      await fetch(addActivityAction.toString(), {
-        method: "POST",
-        body: formData,
-      });
-
-      // Redirect to "member-selection" after success
-      navigate("/member-selection");
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  }
-  */
-
   return (
-    <main class="flex flex-col items-center justify-center min-h-screen bg-white">
-      <h1 class="text-5xl text-sky-700 font-bold uppercase my-8">
+    <main class="flex flex-col min-h-full w-full">
+      {/* Title Section at the Top */}
+      <h1 class="text-5xl text-sky-700 font-bold uppercase my-8 text-center">
         Create a New Activity
       </h1>
 
-      <div class="w-screen max-w-full h-screen p-20">
+      {/* Slider takes up remaining space */}
+      <div class="flex-1 w-screen max-w-full h-full">
         <Slider>
-          <div class="keen-slider__slide bg-blue-200 h-64 flex items-center justify-center">
+          {/* Slide 1: Form */}
+          <Slide class="keen-slider__slide flex items-center justify-center h-full">
             <form
               method="post"
               action={addActivityAction}
@@ -53,16 +39,22 @@ export default function NewActivity() {
                 Submit
               </button>
             </form>
-          </div>
-          <div class="keen-slider__slide bg-green-100 h-64 flex items-center justify-center">
-            Slide 2
-          </div>
-          <div class="keen-slider__slide bg-red-100 h-64 flex items-center justify-center">
-            Slide 3
-          </div>
-          <div class="keen-slider__slide bg-yellow-100 h-64 flex items-center justify-center">
-            Slide 4
-          </div>
+          </Slide>
+
+          {/* Slide 2: User List */}
+          <Slide class="keen-slider__slide flex items-center justify-center h-full">
+            <UserList />
+          </Slide>
+
+          {/* Slide 3 */}
+          <Slide class="flex items-center justify-center h-full">
+            <p class="text-3xl font-bold">Slide 3</p>
+          </Slide>
+
+          {/* Slide 4 */}
+          <Slide class="keen-slider__slide flex items-center justify-center h-full">
+            <p class="text-3xl font-bold">Slide 4</p>
+          </Slide>
         </Slider>
       </div>
     </main>

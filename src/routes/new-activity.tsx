@@ -1,12 +1,15 @@
 import { redirect, useNavigate } from "@solidjs/router";
+import { createSignal, onMount } from "solid-js";
 import { TextInput } from "~/components/TextInput";
 import { addActivityAction } from "~/lib/activity";
 import Slider from "~/components/Slider";
 import UserList from "~/components/MemberList";
 import Slide from "~/components/Slide";
+import { NextButton } from "~/components/NextButton"; // Import the new component
 
 export default function NewActivity() {
   const navigate = useNavigate();
+  
   return (
     <main class="flex flex-col min-h-full w-full">
       {/* Title Section at the Top */}
@@ -17,8 +20,7 @@ export default function NewActivity() {
       {/* Slider takes up remaining space */}
       <div class="flex-1 w-screen max-w-full h-full">
         <Slider>
-          {/* Slide 1: Form */}
-          <Slide class="keen-slider__slide flex items-center justify-center h-full">
+          <Slide>
             <form
               method="post"
               action={addActivityAction}
@@ -32,27 +34,36 @@ export default function NewActivity() {
               />
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
+              <NextButton type="submit">
                 Next
-              </button>
+              </NextButton>
             </form>
           </Slide>
 
           {/* Slide 2: User List */}
-          <Slide class="keen-slider__slide flex items-center justify-center h-full">
+          <Slide>
             <UserList />
+            <div class="mt-4 flex justify-between">
+              <button 
+                class="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition hover:bg-gray-400"
+                onClick={() => {
+                  // Handle back logic if needed
+                }}>
+                Back
+              </button>
+              <NextButton>
+                Next
+              </NextButton>
+            </div>
           </Slide>
 
           {/* Slide 3 */}
-          <Slide class="flex items-center justify-center h-full">
+          <Slide>
             <p class="text-3xl font-bold">Slide 3</p>
           </Slide>
 
           {/* Slide 4 */}
-          <Slide class="keen-slider__slide flex items-center justify-center h-full">
+          <Slide>
             <p class="text-3xl font-bold">Slide 4</p>
           </Slide>
         </Slider>

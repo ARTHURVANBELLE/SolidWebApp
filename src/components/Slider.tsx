@@ -1,6 +1,12 @@
-import { createSignal, JSXElement, onMount, onCleanup } from "solid-js";
+import { createSignal, JSXElement, onMount, onCleanup, createContext, useContext } from "solid-js";
 import 'keen-slider/keen-slider.min.css';
 import KeenSlider from 'keen-slider';
+
+const SliderContext = createContext<{ nextSlide: () => void, prevSlide: () => void} | null>(null);
+
+export function useSliderContext() {
+  return useContext(SliderContext)!;
+}
 
 type SliderProps = {
   children: JSXElement;
@@ -41,6 +47,7 @@ export default function Slider(props: SliderProps) {
   };
 
   return (
+    <SliderContext.Provider value={{ nextSlide, prevSlide }}>
     <div class="relative">
       <div class="keen-slider" ref={sliderContainer}>
         {props.children}
@@ -70,5 +77,6 @@ export default function Slider(props: SliderProps) {
         </>
       )}
     </div>
+    </SliderContext.Provider>
   );
 }

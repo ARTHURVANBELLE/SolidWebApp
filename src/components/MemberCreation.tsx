@@ -35,7 +35,8 @@ export default function NewMember() {
             placeholder="password"
             required
           />
-          <TeamSelect name="team" required></TeamSelect>
+          {/* Change the name to match what your schema expects */}
+          <TeamSelect name="teamId" required />
 
           {/* Submit Button */}
           <button

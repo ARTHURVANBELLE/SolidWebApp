@@ -19,15 +19,24 @@ export const getUsers = query(async () => {
 
 export const addUser = async (formData: FormData) => {
     'use server'
+    
+    // Get the teamId from the form and convert it to a number
+    const teamIdValue = formData.get('team') || formData.get('teamId');
+    const teamId = Number(teamIdValue);
+    
+    if (isNaN(teamId)) {
+        throw new Error("Invalid team ID: must be a number");
+    }
+    
     const newuser = userSchema.parse({
-        firstName: formData.get('firstName') as String,
-        lastName: formData.get('lastName') as String,
-        email: formData.get('email') as String,
-        teamId: formData.get('teamId') as String,
-        password: formData.get('password') as String,
-    })
+        firstName: formData.get('firstName') as string,
+        lastName: formData.get('lastName') as string,
+        email: formData.get('email') as string,
+        teamId: teamId,
+        password: formData.get('password') as string,
+    });
 
-    return db.user.create({ data: newuser})
+    return db.user.create({ data: newuser });
 }
 
 export const addUserAction = action(async (form: FormData) => {

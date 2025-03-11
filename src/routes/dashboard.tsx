@@ -1,7 +1,7 @@
 import { TextInput } from "~/components/TextInput";
 import { addUserAction } from "~/lib/user";
-import NewMember from "~/components/MemberCreation";
-import NewTeam from "~/components/TeamCreation";
+import NewMember from "~/components/User/MemberCreation";
+import NewTeam from "~/components/Team/TeamCreation";
 
 export default function NewActivity() {
   return (

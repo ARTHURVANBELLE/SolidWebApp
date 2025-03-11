@@ -1,15 +1,14 @@
-import { redirect, useNavigate } from "@solidjs/router";
-import { createSignal, onMount } from "solid-js";
+import { useNavigate } from "@solidjs/router";
 import { TextInput } from "~/components/TextInput";
 import { addActivityAction } from "~/lib/activity";
 import Slider from "~/components/Slider";
-import UserList from "~/components/MemberList";
+import UserList from "~/components/User/MemberList";
 import Slide from "~/components/Slide";
-import { NextButton } from "~/components/NextButton"; // Import the new component
+import { NextButton } from "~/components/NextButton";
 
 export default function NewActivity() {
   const navigate = useNavigate();
-  
+
   return (
     <main class="flex flex-col min-h-full w-full">
       {/* Title Section at the Top */}
@@ -22,6 +21,7 @@ export default function NewActivity() {
         <Slider>
           <Slide>
             <form
+              id="activity-form"
               method="post"
               action={addActivityAction}
               class="flex flex-col gap-4"
@@ -34,7 +34,10 @@ export default function NewActivity() {
               />
 
               {/* Submit Button */}
-              <NextButton type="submit">
+              <NextButton 
+                type="submit" 
+                form="activity-form"
+              >
                 Next
               </NextButton>
             </form>
@@ -44,16 +47,15 @@ export default function NewActivity() {
           <Slide>
             <UserList />
             <div class="mt-4 flex justify-between">
-              <button 
+              <button
                 class="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition hover:bg-gray-400"
                 onClick={() => {
                   // Handle back logic if needed
-                }}>
+                }}
+              >
                 Back
               </button>
-              <NextButton>
-                Next
-              </NextButton>
+              <NextButton>Next</NextButton>
             </div>
           </Slide>
 

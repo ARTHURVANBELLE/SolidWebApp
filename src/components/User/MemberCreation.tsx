@@ -1,9 +1,9 @@
 import { TextInput } from "~/components/TextInput";
 import { addUserAction } from "~/lib/user";
 import { createSelector, createSignal, Show } from "solid-js";
-import TeamSelect from "~/components/TeamSelect";
+import TeamSelect from "~/components/Team/TeamSelect";
 import { useSubmission } from "@solidjs/router";
-import SubmitButton from "./SubmitButton";
+import SubmitButton from "../SubmitButton";
 
 export default function NewMember() {
   const [selectedId, setSelectedId] = createSignal();

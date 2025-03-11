@@ -1,5 +1,5 @@
 import { A } from "@solidjs/router";
-import  Login  from "~/components/login";
+import  Login  from "~/components/User/login";
 
 export default function () {
   return (

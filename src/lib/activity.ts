@@ -1,4 +1,4 @@
-import { action, redirect } from "@solidjs/router";
+import { action } from "@solidjs/router";
 import { db } from "./db";
 
 async function addActivity(activityName: string) {
@@ -14,5 +14,4 @@ export const addActivityAction = action(async (form: FormData) => {
     'use server'
     await addActivity(form.get("title") as string);
     console.log("addActivityAction:", addActivityAction);
-    //redirect("/member-selection");
 }, 'addActivityAction');

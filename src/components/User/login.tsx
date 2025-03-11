@@ -1,6 +1,6 @@
 import { createSignal,  } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import { TextInput } from "./TextInput";
+import { TextInput } from "../TextInput";
 
 
 export default function Login(props: { redirectTo?: string }) {

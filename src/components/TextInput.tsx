@@ -8,6 +8,7 @@ type TextInputProps = {
   value?: string;
   error?: string;
   required?: boolean;
+  disabled?: boolean;
   ref?: (element: HTMLInputElement) => void;
   onInput?: JSX.EventHandler<HTMLInputElement, InputEvent>;
   onChange?: JSX.EventHandler<HTMLInputElement, Event>;

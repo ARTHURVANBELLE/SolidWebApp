@@ -1,5 +1,6 @@
 import { TextInput } from "~/components/TextInput";
-import { addUserAction } from "~/lib/users";
+import { addTeamAction } from "~/lib/team";
+
 
 export default function NewTeam() {
   return (
@@ -10,7 +11,7 @@ export default function NewTeam() {
 
       {/* Form Container */}
       <div class="bg-gray-100 shadow-lg rounded-2xl p-8 w-full max-w-md">
-        <form method="post" action={addUserAction} class="flex flex-col gap-4">
+        <form method="post" action={addTeamAction} class="flex flex-col gap-4">
           <TextInput
             name="name"
             type="text"

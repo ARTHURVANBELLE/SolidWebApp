@@ -1,5 +1,5 @@
 import { TextInput } from "~/components/TextInput";
-import { addUserAction } from "~/lib/users";
+import { addUserAction } from "~/lib/user";
 import { createSelector, createSignal, Show } from "solid-js";
 import TeamSelect from "~/components/TeamSelect";
 import { useSubmission } from "@solidjs/router";

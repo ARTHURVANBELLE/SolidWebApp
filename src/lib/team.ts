@@ -16,7 +16,7 @@ export const getTeams = query(async () => {
 export const addTeam = async (formData: FormData) => {
     'use server'
     const newteam = teamSchema.parse({
-        name: formData.get('name') as String,
+        name: formData.get('name'),
     })
 
     return db.team.create({ data: { name: newteam.name } })

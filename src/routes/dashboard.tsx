@@ -1,5 +1,5 @@
 import { TextInput } from "~/components/TextInput";
-import { addUserAction } from "~/lib/users";
+import { addUserAction } from "~/lib/user";
 import NewMember from "~/components/MemberCreation";
 import NewTeam from "~/components/TeamCreation";
 

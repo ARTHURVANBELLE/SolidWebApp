@@ -26,7 +26,7 @@ export default function TeamSelect(props: TeamSelectProps) {
     props.defaultValue || null
   );
   const teams = createAsyncStore(() => getTeams());
-  const [isOpen, setIsOpen] = createSignal(true);
+  const [isOpen, setIsOpen] = createSignal(false);
 
   // Toggle dropdown visibility
   const toggleDropdown = () => setIsOpen(!isOpen());

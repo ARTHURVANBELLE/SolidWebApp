@@ -1,8 +1,11 @@
 import { TextInput } from "~/components/TextInput";
 import { addTeamAction } from "~/lib/team";
-
+import { useSubmission } from "@solidjs/router";
+import SubmitButton from "./SubmitButton";
 
 export default function NewTeam() {
+  const addTeamSubmission = useSubmission(addTeamAction);
+
   return (
     <main class="flex flex-col items-center justify-center min-h-fit">
       <h1 class="text-5xl text-sky-700 font-bold uppercase my-8">
@@ -17,15 +20,15 @@ export default function NewTeam() {
             type="text"
             placeholder="Team name"
             required
+            disabled={addTeamSubmission.pending}
           />
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            class="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            Submit
-          </button>
+          {/* Submit Button with Loading State */}
+          <SubmitButton
+            pending={addTeamSubmission.pending}
+            text="Submit" 
+            processingText="Processing..."
+          />
         </form>
       </div>
     </main>

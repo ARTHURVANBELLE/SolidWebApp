@@ -20,12 +20,8 @@ export function NextButton(props: {
         if (props.onClick) {
           props.onClick(e);
         }
-
-        if (props.type === "submit") {
-          nextSlide();
-        } else {
-          nextSlide();
-        }
+        nextSlide();
+        //e.preventDefault();
       }}
       form={props.form}
     >

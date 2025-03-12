@@ -1,7 +1,7 @@
 import { action } from "@solidjs/router";
 import { db } from "./db";
 
-async function addActivity(activityName: string) {
+export async function addActivity(activityName: string) {
     'use server'
     return db.activity.create({
         data: {

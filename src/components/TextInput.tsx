@@ -2,7 +2,7 @@ import { JSX, splitProps } from "solid-js";
 
 type TextInputProps = {
   name: string;
-  type: "text" | "email" | "tel" | "password" | "url" | "date";
+  type: "text" | "email" | "tel" | "password" | "url" | "date" | "dateTime" | "time";
   label?: string;
   placeholder?: string;
   value?: string;

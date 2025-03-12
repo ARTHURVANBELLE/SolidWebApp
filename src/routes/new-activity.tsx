@@ -1,13 +1,27 @@
-import { useNavigate } from "@solidjs/router";
 import { TextInput } from "~/components/TextInput";
 import { addActivityAction } from "~/lib/activity";
 import Slider from "~/components/Slider";
 import UserList from "~/components/User/MemberList";
 import Slide from "~/components/Slide";
 import { NextButton } from "~/components/NextButton";
+import { createStore } from "solid-js/store";
 
 export default function NewActivity() {
-  const navigate = useNavigate();
+  const [formData, setFormData] = createStore({
+    activity: {
+      title: "",
+      date: "",
+      time: "",
+      description: "",
+    },
+    details: {
+      users: [],
+    },
+    files: {
+      picturesURL: [],
+      gpxURL: "",
+    },
+  });
 
   return (
     <main class="flex flex-col min-h-full w-full">
@@ -18,57 +32,61 @@ export default function NewActivity() {
 
       {/* Slider takes up remaining space */}
       <div class="flex-1 w-screen max-w-full h-full">
-        <Slider>
-          <Slide>
-            <form
-              id="activity-form"
-              method="post"
-              action={addActivityAction}
-              class="flex flex-col gap-4"
-            >
+        <form>
+          <Slider>
+            <Slide>
               <TextInput
                 name="title"
                 type="text"
-                placeholder="Enter activity title"
-                required={true}
-              />
-
-              {/* Submit Button */}
-              <NextButton 
-                type="submit" 
-                form="activity-form"
-              >
-                Next
-              </NextButton>
-            </form>
-          </Slide>
-
-          {/* Slide 2: User List */}
-          <Slide>
-            <UserList />
-            <div class="mt-4 flex justify-between">
-              <button
-                class="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition hover:bg-gray-400"
-                onClick={() => {
-                  // Handle back logic if needed
+                placeholder="Activity name"
+                required
+                value={formData.activity.title}
+                onInput={(e) => {
+                  setFormData("activity", "title", e.currentTarget.value);
                 }}
-              >
-                Back
-              </button>
-              <NextButton>Next</NextButton>
-            </div>
-          </Slide>
+              />
+              <TextInput
+                name="date"
+                type="date"
+                placeholder="Activity date"
+                required
+                value={formData.activity.date}
+                onInput={(e) => {
+                  setFormData("activity", "date", e.currentTarget.value);
+                }}
+              />
+              <TextInput
+                name="time"
+                type="time"
+                placeholder="Activity time"
+                required
+                value={formData.activity.time}
+                onInput={(e) => {
+                  setFormData("activity", "time", e.currentTarget.value);
+                }}
+              />
+              <NextButton>Next step</NextButton>
+            </Slide>
 
-          {/* Slide 3 */}
-          <Slide>
-            <p class="text-3xl font-bold">Slide 3</p>
-          </Slide>
+            {/* Slide 2: User List */}
+            <Slide>
+              <UserList />
+              <NextButton>Next step</NextButton>
+            </Slide>
 
-          {/* Slide 4 */}
-          <Slide>
-            <p class="text-3xl font-bold">Slide 4</p>
-          </Slide>
-        </Slider>
+            {/* Slide 3 */}
+            <Slide>
+              <p class="text-3xl font-bold">Slide 3</p>
+              <NextButton>Next step</NextButton>
+            </Slide>
+
+            {/* Slide 4 */}
+            <Slide>
+              <p class="text-3xl font-bold">Slide 4</p>
+              <NextButton>Next step</NextButton>
+            </Slide>
+          </Slider>
+        </form>
       </div>
     </main>
   );

@@ -22,6 +22,7 @@ export async function POST(event: APIEvent) {
     const newTeam = await db.team.create({
       data: {
         name: body.name,
+        users: body.users,
       },
     });
 

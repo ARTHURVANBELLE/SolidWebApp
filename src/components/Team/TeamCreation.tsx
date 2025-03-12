@@ -1,7 +1,7 @@
 import { TextInput } from "~/components/TextInput";
 import { addTeamAction } from "~/lib/team";
 import { useSubmission } from "@solidjs/router";
-import SubmitButton from "./SubmitButton";
+import SubmitButton from "../SubmitButton";
 
 export default function NewTeam() {
   const addTeamSubmission = useSubmission(addTeamAction);

@@ -1,10 +1,11 @@
 import { db } from "~/lib/db";
 import { APIEvent } from "@solidjs/start/server";
 import bcrypt from "bcrypt";
+import { getUsers, addUserAction } from "~/lib/user";
 
 export async function GET(event: APIEvent) {
   try {
-    const users = await db.user.findMany();
+    const users = await getUsers();
     return new Response(JSON.stringify(users), {
       headers: { "Content-Type": "application/json" },
     });
@@ -16,7 +17,6 @@ export async function GET(event: APIEvent) {
   }
 }
 
-
 export async function POST(event: APIEvent) {
   try {
     const body = await event.request.json();
@@ -24,15 +24,14 @@ export async function POST(event: APIEvent) {
     // Hash the password before storing
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
-    const newUser = await db.user.create({
-      data: {
-        firstName: body.firstName,
-        lastName: body.lastName,
-        email: body.email,
-        team: body.team,
-        password: hashedPassword,
-      },
-    });
+    const newUser = new FormData();
+    newUser.append("firstName", body.firstName);
+    newUser.append("lastName", body.lastName);
+    newUser.append("email", body.email);
+    newUser.append("team", body.team);
+    newUser.append("password", hashedPassword);
+
+    await addUserAction(newUser);
 
     return new Response(JSON.stringify(newUser), {
       headers: { "Content-Type": "application/json" },

@@ -1,5 +1,5 @@
-import { db } from "~/lib/db";
 import { APIEvent } from "@solidjs/start/server";
+import { getUsersByTeam } from "~/lib/user";
 
 export async function GET(event: APIEvent) {
   try {
@@ -13,10 +13,7 @@ export async function GET(event: APIEvent) {
       });
     }
 
-    // Fetch users with the specific team ID
-    const users = await db.user.findMany({
-      where: { teamId: parseInt(teamId) },
-    });
+    const users = await getUsersByTeam(parseInt(teamId));
 
     if (!users) {
       return new Response(JSON.stringify({ error: "No users found" }), {

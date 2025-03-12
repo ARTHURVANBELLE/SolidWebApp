@@ -1,12 +1,19 @@
 import { db } from "./db";
 import { z } from "zod";
-import { action, redirect, query, reload } from "@solidjs/router";
+import { action, query } from "@solidjs/router";
 import bcrypt from "bcrypt";
 
 export const getUsers = query(async () => {
   "use server";
   return db.user.findMany();
 }, "getUsers");
+
+export const getUsersByTeam = query(async (teamId: number) => {
+  "use server";
+  return db.user.findMany({
+    where: { teamId },
+  });
+}, "getUsersByTeam");
 
 export const addUser = async (formData: FormData) => {
   "use server";

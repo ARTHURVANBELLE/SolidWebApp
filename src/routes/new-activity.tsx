@@ -1,10 +1,10 @@
 import { TextInput } from "~/components/TextInput";
-import { addActivityAction } from "~/lib/activity";
 import Slider from "~/components/Slider";
 import UserList from "~/components/User/MemberList";
 import Slide from "~/components/Slide";
 import { NextButton } from "~/components/NextButton";
 import { createStore } from "solid-js/store";
+import StravaOAuthRedirect from "~/components/User/StravaOAuthRedirect";
 
 export default function NewActivity() {
   const [formData, setFormData] = createStore({
@@ -80,6 +80,7 @@ export default function NewActivity() {
             {/* Slide 3 */}
             <Slide>
               <p class="text-3xl font-bold">Slide 3</p>
+              {/*<StravaOAuthRedirect />*/}
               <NextButton>Next step</NextButton>
             </Slide>
 

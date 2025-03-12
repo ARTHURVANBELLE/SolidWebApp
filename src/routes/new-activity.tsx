@@ -15,7 +15,7 @@ export default function NewActivity() {
       description: "",
     },
     details: {
-      users: [],
+      users: [] as number[],
     },
     files: {
       picturesURL: [],
@@ -70,7 +70,10 @@ export default function NewActivity() {
 
             {/* Slide 2: User List */}
             <Slide>
-              <UserList />
+              <UserList 
+                onSelectionChange={(selectedIds)=> {
+                  setFormData("details", "users", selectedIds);
+                }}/>
               <NextButton>Next step</NextButton>
             </Slide>
 

@@ -16,9 +16,13 @@ type Team = {
   name: string;
 };
 
+interface UserListProps {
+  onSelectionChange: (selectedIds: number[]) => void;
+}
+
 type TeamWithUsers = Team & { users: User[] };
 
-export default function UserList() {
+export default function UserList(props: UserListProps) {
   const [teamsWithUsers, setTeamsWithUsers] = createSignal<TeamWithUsers[]>([]);
   const [selectedUserIds, setSelectedUserIds] = createSignal<number[]>([]);
 
@@ -40,11 +44,9 @@ export default function UserList() {
 
   const toggleUserSelection = (userId: number) => {
     setSelectedUserIds((prev) => {
-      if (prev.includes(userId)) {
-        return prev.filter((id) => id !== userId);
-      } else {
-        return [...prev, userId];
-      }
+      const updated = prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId];
+      props.onSelectionChange(updated); // Notify parent of the change
+      return updated;
     });
   };
 

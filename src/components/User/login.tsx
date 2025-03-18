@@ -1,21 +1,13 @@
 // src/components/Login.tsx
-import { createSignal } from "solid-js";
-import { useNavigate } from "@solidjs/router";
-import { TextInput } from "../TextInput";
-import { redirect } from "solid-start";
 import { createServerAction$ } from "solid-start/server";
-import { getLoginUrl } from "~/routes/api/session";
+import { redirect } from "solid-start";
+import { getLoginUrl } from "~/utils/session";
 
 export default function Login(props: { redirectTo?: string }) {
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    navigate(props.redirectTo || "/dashboard");
-  };
-
   const [_, { Form }] = createServerAction$(async () => {
-    throw redirect(await getLoginUrl())
-  })
+    const loginUrl = await getLoginUrl();
+    return redirect(loginUrl);
+  });
 
   return (
     <div>

@@ -6,6 +6,7 @@ import { getLoginUrl } from "~/utils/session";
 export default function Login(props: { redirectTo?: string }) {
   const [_, { Form }] = createServerAction$(async () => {
     const loginUrl = await getLoginUrl();
+    console.log("Redirect URL:", await getLoginUrl());
     return redirect(loginUrl);
   });
 

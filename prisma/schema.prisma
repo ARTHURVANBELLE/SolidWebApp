@@ -32,9 +32,10 @@ model Activity {
 
 model User {
   id         Int                 @id @default(autoincrement())
+  stravaId   Int?
   firstName  String
   lastName   String
-  email      String
+  email      String             @unique
   password   String
   teamId     Int
   team       Team                @relation(fields: [teamId], references: [id])

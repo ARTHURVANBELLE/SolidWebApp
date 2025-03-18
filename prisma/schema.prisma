@@ -37,8 +37,8 @@ model User {
   lastName   String
   email      String             @unique
   password   String
-  teamId     Int
-  team       Team                @relation(fields: [teamId], references: [id])
+  teamId     Int?
+  team       Team?                @relation(fields: [teamId], references: [id])
   activities ActivitiesOnUsers[] // Many-to-many relation
 }
 

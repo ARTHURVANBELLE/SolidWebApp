@@ -46,6 +46,7 @@ export async function GET(event: APIEvent) {
       firstName: userInfo.first_name,
       lastName: userInfo.last_name,
       stravaId: userInfo.id,
+      password: "dummy",
     },
   })
 

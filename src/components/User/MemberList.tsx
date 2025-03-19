@@ -8,7 +8,8 @@ type User = {
   lastName: string;
   email: string;
   password: string;
-  teamId: number;
+  teamId: number | null;
+  stravaId: number | null;
 };
 
 type Team = {

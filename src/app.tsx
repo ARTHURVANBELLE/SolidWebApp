@@ -1,7 +1,7 @@
 // src/root.tsx or your main layout file
 /*
 import { Suspense } from "solid-js";
-import { Router, Routes } from "@solidjs/router";
+import { Router } from "@solidjs/router";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Debug from "./components/Debug";
 import { getLoginUrl } from "./utils/session";
@@ -17,7 +17,7 @@ export default function Root() {
     </Router>
   );
 }
-*/
+
 
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
@@ -37,3 +37,25 @@ export default function App() {
     </Router>
   );
 }
+
+*/
+
+import { Router } from "@solidjs/router";
+//import { FileRoutes } from "@solidjs/start";
+import Nav from "./components/Nav";
+import FileRoutes from "./routes";
+
+export default function App() {
+  return (
+    <Router>
+      <div>
+        <Nav />
+        <main>
+          <FileRoutes />
+        </main>
+      </div>
+    </Router>
+  );
+}
+
+

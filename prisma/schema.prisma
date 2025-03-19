@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,7 +23,7 @@ model Team {
 model Activity {
   id       Int                 @id @default(autoincrement())
   title    String
-  users    ActivitiesOnUsers[] // Many-to-many relation
+  users    ActivitiesOnUsers[]
   comments Comment[]
 }
 
@@ -35,18 +32,18 @@ model User {
   stravaId   Int?
   firstName  String
   lastName   String
-  email      String             @unique
+  email      String              @unique
   password   String
   teamId     Int?
-  team       Team?                @relation(fields: [teamId], references: [id])
-  activities ActivitiesOnUsers[] // Many-to-many relation
+  activities ActivitiesOnUsers[]
+  team       Team?               @relation(fields: [teamId], references: [id])
 }
 
 model ActivitiesOnUsers {
   userId     Int
   activityId Int
-  user       User     @relation(fields: [userId], references: [id])
   activity   Activity @relation(fields: [activityId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 
-  @@id([userId, activityId]) // Composite primary key
+  @@id([userId, activityId])
 }

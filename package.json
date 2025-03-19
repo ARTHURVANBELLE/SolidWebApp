@@ -8,13 +8,14 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
-    "@solidjs/router": "^0.8.2",
+    "@solidjs/router": "^0.15.3",
+    "@types/axios": "^0.9.36",
     "arctic": "^3.5.0",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "form": "^0.2.5",
     "keen-slider": "^6.8.6",
     "solid-slider": "^1.3.18",
-    "solid-start": "^0.3.11",
     "vinxi": "^0.5.3",
     "zod": "^3.24.2"
   },

@@ -27,16 +27,3 @@ export async function saveAuthState(state: string, codeVerifier: string) {
   await session.update({ state, codeVerifier });
   return session;
 }
-
-export async function getLoginUrl() {
-  'use server'
-  const state = generateState();
-  const codeVerifier = generateCodeVerifier();
-  const scopes = ["activity:write", "read"];
-  
-  const url = await strava.createAuthorizationURL(state, scopes);
-  
-  await saveAuthState(state, codeVerifier);
-  
-  return url;
-}

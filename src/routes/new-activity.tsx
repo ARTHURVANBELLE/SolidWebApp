@@ -4,7 +4,6 @@ import UserList from "~/components/User/MemberList";
 import Slide from "~/components/Slide";
 import { NextButton } from "~/components/NextButton";
 import { createStore } from "solid-js/store";
-import StravaOAuthRedirect from "~/components/User/StravaOAuthRedirect";
 
 export default function NewActivity() {
   const [formData, setFormData] = createStore({

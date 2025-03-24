@@ -4,6 +4,7 @@ import axios from 'axios'
 import { getSession } from '~/utils/session'
 import { z } from 'zod'
 import { db } from '~/lib/db'
+import * as strava from 'arctic'
 
 const profileSchema = z.object({
     email: z.string().email(),
@@ -11,6 +12,8 @@ const profileSchema = z.object({
     last_name: z.string(),
     id: z.number(),
 })
+
+/*
 
 export async function GET(event: APIEvent) {
     console.log("Callback URL:", event.request.url);
@@ -68,3 +71,4 @@ export async function GET(event: APIEvent) {
         headers: { Location: '/' },
     })
 }
+*/

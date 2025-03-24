@@ -1,18 +1,14 @@
 import { useSession } from 'vinxi/http';
 import { generateCodeVerifier, generateState, Strava } from "arctic";
+import { strava } from './strava';
+import { action, redirect } from '@solidjs/router';
+
 
 type SessionData = {
   email?: string;
   state?: string;
-  codeVerifier?: string;
   stravaId?: number;
 }
-
-export const stravaClientId = import.meta.env.VITE_STRAVA_CLIENT_ID;
-export const stravaClientSecret = import.meta.env.VITE_STRAVA_CLIENT_SECRET;
-export const stravaRedirectUri = import.meta.env.VITE_STRAVA_REDIRECT_URI;
-
-const strava = new Strava(stravaClientId, stravaClientSecret, stravaRedirectUri);
 
 export function getSession() {
   'use server'
@@ -21,9 +17,13 @@ export function getSession() {
   });
 }
 
-export async function saveAuthState(state: string, codeVerifier: string) {
+export const login = async () => {
   'use server'
-  const session = await getSession();
-  await session.update({ state, codeVerifier });
-  return session;
+  const state = generateState();
+  const url = strava.createAuthorizationURL(state, ['activity:write', 'read']);
+  const session = await getSession()
+  await session.update({ state })
+  throw redirect(url.toString())
 }
+
+export const loginAction = action(login, 'loginAction')

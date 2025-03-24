@@ -28,11 +28,10 @@ model Activity {
 }
 
 model User {
-  id         Int                 @id @default(autoincrement())
-  stravaId   Int?
+  stravaId   Int                 @unique
   firstName  String
   lastName   String
-  email      String              @unique
+  email      String?             @unique
   password   String
   teamId     Int?
   activities ActivitiesOnUsers[]
@@ -43,7 +42,7 @@ model ActivitiesOnUsers {
   userId     Int
   activityId Int
   activity   Activity @relation(fields: [activityId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [stravaId])
 
   @@id([userId, activityId])
 }

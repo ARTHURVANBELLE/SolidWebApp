@@ -9,6 +9,7 @@ const profileSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
   id: z.number(),
+  profile: z.string(),
 });
 
 export async function GET(event: APIEvent) {
@@ -46,6 +47,7 @@ export async function GET(event: APIEvent) {
       stravaId: userInfo.id,
       password: "",
       email: "",
+      imageUrl: userInfo.profile,
     },
   });
  // Update the session

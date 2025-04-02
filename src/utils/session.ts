@@ -6,7 +6,6 @@ import { db } from "../lib/db";
 import { query } from "@solidjs/router";
 
 type SessionData = {
-  email?: string;
   state?: string;
   stravaId?: number;
 };
@@ -40,7 +39,7 @@ export const getUser = query(async () => {
     return await db.user.findUniqueOrThrow({
       where: { stravaId: session.data.stravaId },
     });
-    
+
   } catch {
     return null;
   }

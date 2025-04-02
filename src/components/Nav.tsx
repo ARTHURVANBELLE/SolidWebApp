@@ -10,7 +10,7 @@ export default function Nav() {
     <ul class="flex">
         <NavLink href="/">Home</NavLink>
         <NavLink href="/new-activity">New Activity</NavLink>
-        <NavLink href="/about">About</NavLink>
+        <NavLink href="/profile">My Profile</NavLink>
       </ul>
 
       <ul class="flex">

@@ -15,7 +15,7 @@ export const getUsersByTeam = query(async (teamId: number) => {
   });
 }, "getUsersByTeam");
 
-export const addUser = async (formData: FormData) => {
+export const updateUser = async (formData: FormData) => {
   "use server";
 
   const userSchema = z.object({
@@ -23,6 +23,9 @@ export const addUser = async (formData: FormData) => {
     lastName: z.string(),
     email: z.string().email(),
     teamId: z.coerce.number(),
+    imageUrl: z.string().optional(),
+    stravaId: z.coerce.number(),  // Ensure stravaId is required and unique
+    isAdmin: z.coerce.boolean().optional(),
     password: z
       .string()
       .min(8)
@@ -31,19 +34,34 @@ export const addUser = async (formData: FormData) => {
       }),
   });
 
-  const newuser = await userSchema.parseAsync({
+  const updatedUser = await userSchema.parseAsync({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
-    teamId: formData.get('teamId'),
-    password: formData.get('password'),
+    teamId: formData.get("teamId"),
+    password: formData.get("password"),
+    imageUrl: formData.get("imageUrl"),
+    stravaId: formData.get("stravaId"),
+    isAdmin: formData.get("isAdmin") === "on",
   });
 
-  return db.user.create({ data: newuser });
+  // Find the user by stravaId
+  const existingUser = await db.user.findUnique({
+    where: { stravaId: updatedUser.stravaId },
+  });
+
+  if (!existingUser) {
+    throw new Error("User with the given Strava ID not found.");
+  }
+
+  return db.user.update({
+    where: { stravaId: updatedUser.stravaId },
+    data: updatedUser,
+  });
 };
 
-export const addUserAction = action(async (form: FormData) => {
+export const updateUserAction = action(async (form: FormData) => {
   "use server";
-  await addUser(form);
-}, "addUserAction");
+  return await updateUser(form);
+}, "updateUserAction");
 

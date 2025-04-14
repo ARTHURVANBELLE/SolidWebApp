@@ -1,5 +1,5 @@
 import { useSession } from "vinxi/http";
-import { generateCodeVerifier, generateState, Strava } from "arctic";
+import { generateState } from "arctic";
 import { strava } from "./strava";
 import { action, redirect } from "@solidjs/router";
 import { db } from "../lib/db";

@@ -1,5 +1,4 @@
 import { type APIEvent } from "@solidjs/start/server";
-import { decodeIdToken } from "arctic";
 import { z } from "zod";
 import { db } from "~/lib/db";
 import { getSession } from "~/utils/session";
@@ -24,7 +23,6 @@ export async function GET(event: APIEvent) {
   }
 
   // Get token and use it to get the user's info
-  console.log("A");
   const tokens = await strava.validateAuthorizationCode(code);
   const response = await fetch("https://www.strava.com/api/v3/athlete", {
     headers: {

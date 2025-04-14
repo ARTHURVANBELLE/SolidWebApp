@@ -1,8 +1,12 @@
 import { useLocation } from "@solidjs/router";
 import {NavLink} from "./Navlink";
+import { Show } from "solid-js";
+import { createAsync } from "@solidjs/router";
+import { getUser } from "~/utils/session";
 
 export default function Nav() {
   const location = useLocation();
+  const user = createAsync(() => getUser());
   const active = (path: string) =>
     path == location.pathname ? "border-sky-600" : "border-transparent hover:border-sky-600";
   return (
@@ -14,7 +18,10 @@ export default function Nav() {
       </ul>
 
       <ul class="flex">
-        <NavLink href="/admin">Admin</NavLink>
+        <Show when={user()?.isAdmin}>
+          <NavLink href="/dashboard">Admin</NavLink>
+        </Show>
+        
       </ul>
     </nav>
   );

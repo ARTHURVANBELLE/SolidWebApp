@@ -3,13 +3,14 @@ import { getTeams } from "~/lib/team";
 import { getUsersByTeam, getUsers } from "~/lib/user";
 
 type User = {
-  id: number;
+  stravaId: number;
   firstName: string;
   lastName: string;
-  email: string;
+  email: string | null;
   password: string;
   teamId: number | null;
-  stravaId: number | null;
+  imageUrl: string | null;
+  isAdmin: boolean | null;
 };
 
 type Team = {
@@ -58,18 +59,18 @@ export default function UserList(props: UserListProps) {
         <For each={teamsWithUsers()}>
           {(team) => (
             <li class="border p-2 my-2 rounded">
-              <h3 class="text-lg font-semibold">{team.name}</h3>
+              <h3 class="text-lg font-semibold">Team {team.name}</h3>
               <ul class="ml-4">
                 <For each={team.users}>
                   {(user) => (
                     <li class="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        id={`user-${user.id}`}
-                        checked={selectedUserIds().includes(user.id)}
-                        onChange={() => toggleUserSelection(user.id)}
+                        id={`user-${user.stravaId}`}
+                        checked={selectedUserIds().includes(user.stravaId)}
+                        onChange={() => toggleUserSelection(user.stravaId)}
                       />
-                      <label for={`user-${user.id}`}>
+                      <label for={`user-${user.stravaId}`}>
                         {user.firstName} {user.lastName}
                       </label>
                     </li>

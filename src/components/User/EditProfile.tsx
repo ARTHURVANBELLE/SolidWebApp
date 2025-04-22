@@ -24,6 +24,17 @@ export default function EditProfile() {
   const [error, setError] = createSignal<string | null>(null);
   const usersPerPage = 20;
 
+  // Add state for image preview
+  const [imagePreviewError, setImagePreviewError] = createSignal(false);
+  
+  const handleImageError = () => {
+    setImagePreviewError(true);
+  };
+  
+  const resetImageError = () => {
+    setImagePreviewError(false);
+  };
+
   // Fetch user data properly using createAsync outside of createEffect
   const userData = createAsync(() => getUser());
 
@@ -49,7 +60,6 @@ export default function EditProfile() {
         await updateUserAction(formData);
       } catch (e) {
         console.error(`Failed to update ${field}:`, e);
-        // Optionally revert the UI change here if the server update failed
       }
     }
   };
@@ -104,6 +114,36 @@ export default function EditProfile() {
                 </td>
                 <td class="p-2">
                   <TeamSelect name="team" />
+                </td>
+                <td class="p-2">
+                  <div class="flex flex-col space-y-2">
+                    <TextInput 
+                      name="imageUrl" 
+                      type="text" 
+                      value={user()[0].imageUrl || ''} 
+                      onInput={(e) => {
+                        resetImageError();
+                        handleUpdate(user()[0].stravaId, "imageUrl", (e.target as HTMLInputElement).value);
+                      }} 
+                    />
+                    <div class="mt-2 relative">
+                      <Show 
+                        when={user()[0].imageUrl && !imagePreviewError()} 
+                        fallback={
+                          <div class="w-20 h-20 bg-gray-200 flex items-center justify-center rounded">
+                            <span class="text-gray-400 text-xs text-center">No image<br/>available</span>
+                          </div>
+                        }
+                      >
+                        <img 
+                          src={user()[0].imageUrl || ''} 
+                          alt="Profile" 
+                          class="w-20 h-20 object-cover rounded" 
+                          onError={handleImageError}
+                        />
+                      </Show>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </Show>

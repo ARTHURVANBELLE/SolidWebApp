@@ -8,6 +8,13 @@ export const getUsers = query(async () => {
   return db.user.findMany();
 }, "getUsers");
 
+export const getUserById = query(async (id: number) => {
+  "use server";
+  return db.user.findUnique({
+    where: { stravaId: id },
+  });
+}, "getUserById");
+
 export const getUsersByTeam = query(async (teamId: number) => {
   "use server";
   return db.user.findMany({

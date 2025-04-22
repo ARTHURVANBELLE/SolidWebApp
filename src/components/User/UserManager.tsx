@@ -1,6 +1,7 @@
 import { createSignal, createEffect, For } from "solid-js";
 import { updateUserAction, getUsers } from "~/lib/user";
 import {TextInput} from "~/components/TextInput";
+import TeamSelect from "../Team/TeamSelect";
 
 var userData: {
     stravaId: number;
@@ -27,7 +28,9 @@ export default function UserManager() {
   // Handle updates instantly when an admin modifies a field
   const handleUpdate = async (stravaId: number, field: string, value: string | number | null) => {
     setUsers(users().map(user => user.stravaId === stravaId ? { ...user, [field]: value } : user));
-    await updateUserAction({ [field]: value });
+    const formData = new FormData();
+    formData.append(field, value?.toString() ?? '');
+    await updateUserAction(formData);
   };
 
   const paginatedUsers = () => {
@@ -53,17 +56,15 @@ export default function UserManager() {
             <For each={paginatedUsers()}>{(user) => (
               <tr class="border-b">
                 <td class="p-2">
-                  <TextInput value={user.firstName} onInput={(e) => handleUpdate(user.id, "firstName", e.target.value)} />
+                  <TextInput name="firstName" type="text" value={user.firstName} onInput={(e) => handleUpdate(user.stravaId, "firstName", (e.target as HTMLInputElement).value)} />
                 </td>
                 <td class="p-2">
-                  <TextInput value={user.lastName} onInput={(e) => handleUpdate(user.id, "lastName", e.target.value)} />
+                  <TextInput name="lastName" type="text" value={user.lastName} onInput={(e) => handleUpdate(user.stravaId, "lastName", (e.target as HTMLInputElement).value)} />
                 </td>
                 <td class="p-2">
-                  <TextInput value={user.email} onInput={(e) => handleUpdate(user.id, "email", e.target.value)} />
+                  <TextInput name="email" type="email" value={user.email || ""} onInput={(e) => handleUpdate(user.stravaId, "email", (e.target as HTMLInputElement).value)} />
                 </td>
-                <td class="p-2">
-                  <TextInput value={user.team} onInput={(e) => handleUpdate(user.id, "team", e.target.value)} />
-                </td>
+                <TeamSelect name="team"></TeamSelect>
               </tr>
             )}</For>
           </tbody>

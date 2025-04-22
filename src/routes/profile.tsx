@@ -1,6 +1,7 @@
 import { TextInput } from "~/components/TextInput";
 import { createStore } from "solid-js/store";
 import Layout from "~/components/Layout";
+import EditProfile from "~/components/User/EditProfile";
 
 export default function Profile() {
   const [formData, setFormData] = createStore({
@@ -26,6 +27,7 @@ export default function Profile() {
         <form>
 
         </form>
+        <EditProfile />
       </div>
     </main>
     </Layout>

@@ -1,7 +1,7 @@
 import { type APIEvent } from "@solidjs/start/server";
 import { z } from "zod";
 import { db } from "~/lib/db";
-import { getSession } from "~/utils/session";
+import { getSession, updateSessionTokens } from "~/utils/session";
 import { strava } from "~/utils/strava";
 
 const profileSchema = z.object({
@@ -24,6 +24,10 @@ export async function GET(event: APIEvent) {
 
   // Get token and use it to get the user's info
   const tokens = await strava.validateAuthorizationCode(code);
+  
+  // Update the session with the access and refresh tokens
+  await updateSessionTokens(tokens.accessToken(), tokens.refreshToken());
+  
   const response = await fetch("https://www.strava.com/api/v3/athlete", {
     headers: {
       Authorization: `Bearer ${tokens.accessToken()}`,

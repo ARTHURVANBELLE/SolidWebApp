@@ -8,6 +8,8 @@ import { query } from "@solidjs/router";
 type SessionData = {
   state?: string;
   stravaId?: number;
+  accessToken?: string;
+  refreshToken?: string;
 };
 
 export function getSession() {
@@ -17,13 +19,31 @@ export function getSession() {
   });
 }
 
+export async function getSessionData() {
+  "use server";
+  const session = await getSession();
+  return session.data;
+}
+
 export const login = async () => {
   "use server";
   const state = generateState();
-  const url = strava.createAuthorizationURL(state, ["activity:write", "read"]);
+  // The current scope is ["activity:write", "read"] but we need "activity:read_all" 
+  // to read all activities
+  const url = strava.createAuthorizationURL(state, ["activity:write", "activity:read_all", "read"]);
   const session = await getSession();
   await session.update({ state });
   throw redirect(url.toString());
+};
+
+export const updateSessionTokens = async (accessToken: string, refreshToken: string) => {
+  "use server";
+  const session = await getSession();
+  await session.update({ 
+    accessToken, 
+    refreshToken 
+  });
+  return true;
 };
 
 export const loginAction = action(login, "loginAction");

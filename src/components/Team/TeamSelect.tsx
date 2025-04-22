@@ -66,7 +66,7 @@ export default function TeamSelect(props: TeamSelectProps) {
         <span>
           {selectedId()
             ? teams()?.find((t: Team) => t.id === selectedId())?.name
-            : "Select Team"}
+            : "Select"}
         </span>
         <span class="ml-2">▼</span>
       </button>

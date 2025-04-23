@@ -22,7 +22,6 @@ export default function Home() {
         <Counter />
         <p class="mt-8">
         </p>
-        <StravaActivities />
       </main>
     </Layout>
   );

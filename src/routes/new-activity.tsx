@@ -5,6 +5,8 @@ import Slide from "~/components/Slide";
 import { NextButton } from "~/components/NextButton";
 import { createStore } from "solid-js/store";
 import Layout from "~/components/Layout";
+import StravaActivities from "~/components/StravaActivities";
+import { Strava } from "arctic";
 
 export default function NewActivity() {
   const [formData, setFormData] = createStore({
@@ -81,8 +83,7 @@ export default function NewActivity() {
 
               {/* Slide 3 */}
               <Slide>
-                <p class="text-3xl font-bold">Slide 3</p>
-                {/*<StravaOAuthRedirect />*/}
+                <StravaActivities/>
                 <NextButton>Next step</NextButton>
               </Slide>
 

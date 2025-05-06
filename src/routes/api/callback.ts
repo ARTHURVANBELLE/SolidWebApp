@@ -50,8 +50,16 @@ export async function GET(event: APIEvent) {
       password: "",
       email: "",
       imageUrl: userInfo.profile,
+      accessToken: tokens.accessToken(),
     },
   });
+
+  await db.user.update({
+    where: { stravaId: userInfo.id },
+    data: {
+      accessToken: tokens.accessToken(),
+    },
+  })
  // Update the session
  await session.update({
     state: undefined,

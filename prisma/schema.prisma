@@ -38,6 +38,7 @@ model User {
   isAdmin    Boolean?           @default(false)
   activities ActivitiesOnUsers[]
   team       Team?               @relation(fields: [teamId], references: [id])
+  accessToken String?
 }
 
 model ActivitiesOnUsers {

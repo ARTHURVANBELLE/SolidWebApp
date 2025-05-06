@@ -31,14 +31,16 @@ export const updateUser = async (formData: FormData) => {
     email: z.string().email(),
     teamId: z.coerce.number(),
     imageUrl: z.string().optional(),
-    stravaId: z.coerce.number(),  // Ensure stravaId is required and unique
+    stravaId: z.coerce.number(),
     isAdmin: z.coerce.boolean().optional(),
+    accessToken: z.string().optional(),
     password: z
       .string()
       .min(8)
       .transform(async (value) => {
         return await bcrypt.hash(value, 10);
-      }),
+      })
+      .optional(),
   });
 
   const updatedUser = await userSchema.parseAsync({
@@ -49,6 +51,7 @@ export const updateUser = async (formData: FormData) => {
     password: formData.get("password"),
     imageUrl: formData.get("imageUrl"),
     stravaId: formData.get("stravaId"),
+    accessToken: formData.get("accessToken"),
     isAdmin: formData.get("isAdmin") === "on",
   });
 

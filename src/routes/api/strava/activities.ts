@@ -30,7 +30,7 @@ export async function GET(event: APIEvent) {
     if (!response.ok) {
       const error = await response.json();
       console.error("Strava API error:", error);
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         error: "Failed to fetch activities from Strava",
         details: error
       }), {

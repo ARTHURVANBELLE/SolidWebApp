@@ -14,7 +14,11 @@ interface StravaActivity {
   max_speed: number;
 }
 
-export default function StravaActivities() {
+interface StravaActivitiesProps {
+  onSelectionChange?: (selectedActivityId: string | "") => void;
+}
+
+export default function StravaActivities(props: StravaActivitiesProps) {
   // Track the selected activity ID
   const [selectedActivityId, setSelectedActivityId] = createSignal<number | null>(null);
 
@@ -86,12 +90,12 @@ export default function StravaActivities() {
 
   // Toggle selection of an activity
   const toggleActivitySelection = (activityId: number) => {
-    if (selectedActivityId() === activityId) {
-      // Deselect if already selected
-      setSelectedActivityId(null);
-    } else {
-      // Select this activity
-      setSelectedActivityId(activityId);
+    const newSelectedId = selectedActivityId() === activityId ? null : activityId;
+    setSelectedActivityId(newSelectedId);
+    
+    // Call the onSelectionChange prop if provided
+    if (props.onSelectionChange) {
+      props.onSelectionChange(newSelectedId?.toString() ?? "");
     }
   };
 
@@ -163,6 +167,10 @@ export default function StravaActivities() {
                       <div>
                         <span class="text-sm text-gray-500">Total Elapsed Time:</span>
                         <p>{formatTime(activity.elapsed_time)}</p>
+                      </div>
+                      <div>
+                        <span class="text-sm text-gray-500">ID:</span>
+                        <p>{activity.id}</p>
                       </div>
                     </div>
                   </div>

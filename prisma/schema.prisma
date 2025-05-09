@@ -21,8 +21,12 @@ model Team {
 }
 
 model Activity {
-  id       Int                 @id @default(autoincrement())
+  id       Int                 @unique
   title    String
+  datetime  String
+  description String?
+  gpxUrl  String?
+  imageUrl imageUrl[]
   users    ActivitiesOnUsers[]
   comments Comment[]
 }
@@ -39,6 +43,13 @@ model User {
   activities ActivitiesOnUsers[]
   team       Team?               @relation(fields: [teamId], references: [id])
   accessToken String?
+}
+
+model imageUrl {
+  id         Int      @id @default(autoincrement())
+  url        String
+  activityId Int
+  activity   Activity @relation(fields: [activityId], references: [id])
 }
 
 model ActivitiesOnUsers {

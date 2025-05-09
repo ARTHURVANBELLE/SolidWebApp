@@ -1,5 +1,4 @@
 import { A } from "@solidjs/router";
-import Counter from "~/components/Counter";
 import UserList from "~/components/User/MemberList";
 import Layout from "~/components/Layout";
 

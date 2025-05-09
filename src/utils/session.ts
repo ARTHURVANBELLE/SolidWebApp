@@ -36,12 +36,19 @@ export const login = async () => {
   throw redirect(url.toString());
 };
 
+export const logout = async () => {
+  "use server";
+  const session = await getSession();
+  await session.clear();
+  return redirect("/index"); 
+}
+
 export const updateSessionTokens = async (accessToken: string, refreshToken: string) => {
   "use server";
   const session = await getSession();
-  await session.update({ 
-    accessToken, 
-    refreshToken 
+  await session.update({
+    accessToken,
+    refreshToken
   });
   return true;
 };

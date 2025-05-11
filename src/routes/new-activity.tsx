@@ -61,6 +61,12 @@ export default function NewActivity() {
                   onGpxChange={(gpxUrl) => {}}
                   onImageChange={(imageUrl) => {}}
                 />
+                <TextInput
+                  name="description"
+                  type="text"
+                  placeholder="Activity description"
+                  required = {false}
+                />
                 <div class="flex flex-col gap-2 mt-4">
                   <button
                     type="submit"

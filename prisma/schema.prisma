@@ -10,7 +10,7 @@ datasource db {
 model Comment {
   id         Int      @id @default(autoincrement())
   text       String
-  activityId Int
+  activityId BigInt
   activity   Activity @relation(fields: [activityId], references: [id])
 }
 
@@ -21,7 +21,7 @@ model Team {
 }
 
 model Activity {
-  id       Int                 @unique
+  id       BigInt                 @unique
   title    String
   datetime  String
   description String?
@@ -48,13 +48,13 @@ model User {
 model imageUrl {
   id         Int      @id @default(autoincrement())
   url        String
-  activityId Int
+  activityId BigInt
   activity   Activity @relation(fields: [activityId], references: [id])
 }
 
 model ActivitiesOnUsers {
   userId     Int
-  activityId Int
+  activityId BigInt
   activity   Activity @relation(fields: [activityId], references: [id])
   user       User     @relation(fields: [userId], references: [stravaId])
 

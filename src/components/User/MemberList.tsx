@@ -44,6 +44,8 @@ export default function UserList() {
                           type="checkbox"
                           name="users"
                           id={`user-${user.stravaId}`}
+                          value={user.stravaId}
+                          disabled={!user.stravaId}
                         />
                         <label for={`user-${user.stravaId}`}>
                           {user.firstName} {user.lastName}

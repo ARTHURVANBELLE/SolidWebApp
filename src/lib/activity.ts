@@ -7,6 +7,11 @@ export const upsertActivity = async (formData: FormData) => {
 
   console.log("upsertActivity 1 :", formData);
 
+  const imageUrlSchema = z.object({
+    url: z.string(),
+    activityId: z.number(),
+  });
+
   const activitySchema = z.object({
     id: z.string(),
     title: z.string(),
@@ -32,18 +37,60 @@ export const upsertActivity = async (formData: FormData) => {
     date: formData.get("date"),
     description: formData.get("description"),
     gpxUrl: formData.get("gpxUrl"),
-    imageUrl: formData.get("imageUrl"),
-    users: formData.getAll("users"),
-    comments: formData.get("comments"),
+    imageUrl: formData.getAll("imageUrl").map(url => ({ url: url.toString() })),
+    users: formData.getAll("users")
+      .filter(userId => {
+        // Filter out empty strings, null, and undefined values
+        const value = userId?.toString().trim();
+        return value !== null && value !== undefined && value !== '';
+      })
+      .map(userId => {
+        // Try to parse the value, which could be a JSON string
+        try {
+          const userObj = JSON.parse(userId.toString());
+          const id = parseInt(userObj.userId || userObj.id);
+          return { userId: isNaN(id) ? undefined : id }; // Skip NaN values
+        } catch (e) {
+          // If not JSON, try to parse directly as number
+          const id = parseInt(userId.toString());
+          return { userId: isNaN(id) ? undefined : id }; // Skip NaN values
+        }
+      })
+      .filter(user => user.userId !== undefined), // Remove objects with undefined userId
+    comments: (() => {
+      const commentsValue = formData.get("comments");
+      if (!commentsValue) return undefined;
+      
+      try {
+        // Try to parse comments as JSON array
+        const parsedComments = JSON.parse(commentsValue.toString());
+        return Array.isArray(parsedComments) ? parsedComments : [];
+      } catch (e) {
+        // If parsing fails, return empty array
+        return [];
+      }
+    })(),
   });
 
   const activityInfo = activitySchema.parse(updatedActivity);
-
+  
   console.log("upsertActivity 2 :", activityInfo);
 
   return db.activity.upsert({
-    where: { id: parseInt(activityInfo.id)},
-    update: {},
+    where: { id: parseInt(activityInfo.id) },
+    update: {
+      title: activityInfo.title,
+      datetime: activityInfo.date,
+      description: activityInfo.description,
+      gpxUrl: activityInfo.gpxUrl,
+      imageUrl: {
+        deleteMany: {}, // Remove existing images
+        create: activityInfo.imageUrl.map(img => ({ url: img.url })), // Add new images
+      },
+      users: {
+        create: activityInfo.users,
+      },
+    },
     create: {
       id: parseInt(activityInfo.id),
       title: activityInfo.title,

@@ -5,12 +5,13 @@ import { nullable, z } from "zod";
 export const upsertActivity = async (formData: FormData) => {
   "use server";
 
-  console.log("upsertActivity 1 :", formData);
-
   const imageUrlSchema = z.object({
     url: z.string(),
     activityId: z.number(),
   });
+
+  console.log("Form Data:", formData);
+  console.log("Users in form:", formData.getAll("users"));
 
   const activitySchema = z.object({
     id: z.string(),
@@ -42,21 +43,40 @@ export const upsertActivity = async (formData: FormData) => {
       .filter(userId => {
         // Filter out empty strings, null, and undefined values
         const value = userId?.toString().trim();
+        console.log("User value before filtering:", value);
         return value !== null && value !== undefined && value !== '';
       })
       .map(userId => {
+        console.log("Processing user:", userId.toString());
         // Try to parse the value, which could be a JSON string
         try {
-          const userObj = JSON.parse(userId.toString());
-          const id = parseInt(userObj.userId || userObj.id);
-          return { userId: isNaN(id) ? undefined : id }; // Skip NaN values
+          const userIdStr = userId.toString().trim();
+          
+          // First try to parse as JSON
+          if (userIdStr.startsWith('{') && userIdStr.endsWith('}')) {
+            const userObj = JSON.parse(userIdStr);
+            console.log("Parsed user object:", userObj);
+            const id = parseInt(userObj.userId || userObj.id);
+            console.log("User ID after parsing JSON:", id);
+            return { userId: isNaN(id) ? undefined : id };
+          } else {
+            // If not JSON format, parse directly as number
+            const id = parseInt(userIdStr);
+            console.log("User ID after direct parsing:", id);
+            return { userId: isNaN(id) ? undefined : id };
+          }
         } catch (e) {
-          // If not JSON, try to parse directly as number
+          console.log("Parsing failed:", e);
+          // If all parsing fails, try direct number parsing as fallback
           const id = parseInt(userId.toString());
-          return { userId: isNaN(id) ? undefined : id }; // Skip NaN values
+          console.log("Fallback - User ID after direct parsing:", id);
+          return { userId: isNaN(id) ? undefined : id };
         }
       })
-      .filter(user => user.userId !== undefined), // Remove objects with undefined userId
+      .filter(user => {
+        console.log("User object after mapping:", user);
+        return user.userId !== undefined;
+      }),
     comments: (() => {
       const commentsValue = formData.get("comments");
       if (!commentsValue) return undefined;
@@ -73,9 +93,10 @@ export const upsertActivity = async (formData: FormData) => {
   });
 
   const activityInfo = activitySchema.parse(updatedActivity);
-  
-  console.log("upsertActivity 2 :", activityInfo);
 
+  console.log("Parsed Activity Info:", activityInfo);
+  console.log("Users after parsing:", activityInfo.users);
+  
   return db.activity.upsert({
     where: { id: parseInt(activityInfo.id) },
     update: {
@@ -88,7 +109,8 @@ export const upsertActivity = async (formData: FormData) => {
         create: activityInfo.imageUrl.map(img => ({ url: img.url })), // Add new images
       },
       users: {
-        create: activityInfo.users,
+        deleteMany: {}, // Remove existing user connections
+        create: activityInfo.users, // Add new user connections
       },
     },
     create: {
@@ -115,8 +137,38 @@ export const upsertActivity = async (formData: FormData) => {
   });
 };
 
+export const getActivities = async (activityNumber: number) => {
+  "use server";
+
+  const activities = await db.activity.findMany({
+    orderBy: {
+      datetime: "desc",
+    },
+    take: activityNumber,
+    include: {
+      imageUrl: true,
+      users: true,
+    },
+  });
+  return activities.map((activity) => ({
+    id: activity.id,
+    title: activity.title,
+    datetime: activity.datetime,
+    description: activity.description,
+    gpxUrl: activity.gpxUrl,
+    imageUrl: activity.imageUrl.map((img) => img.url),
+    users: activity.users.map((user) => ({
+      userId: typeof user.userId === 'bigint' ? Number(user.userId) : user.userId
+    })),
+  }));
+}
+
 export const upsertActivityAction = action(async (form: FormData) => {
   "use server";
   await upsertActivity(form);
-  console.log("addActivityAction:", upsertActivity(form));
 }, "addActivityAction");
+
+export const getActivitiesAction = action(async (activityNumber: number) => {
+  "use server";
+  await getActivities(activityNumber);
+}, "getActivitiesAction");

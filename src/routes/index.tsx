@@ -3,9 +3,9 @@ import {getUser, getSessionData} from "../utils/session";
 import { createAsync } from "@solidjs/router";
 import pelotonImage from "~/assets/image/large_peloton.jpg";
 
+
 export default function Home() {
     const user = createAsync(() => getUser());
-    //console.log(user());
 
     const session = createAsync(() => getSessionData());
     console.log(session());

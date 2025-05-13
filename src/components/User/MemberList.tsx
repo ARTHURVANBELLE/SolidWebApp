@@ -22,7 +22,7 @@ const getTeams = async () => {
   return res;
 };
 
-export default function UserList() {
+export default function MemberList() {
   const [teamsData] = createResource(getTeams);
 
   return (

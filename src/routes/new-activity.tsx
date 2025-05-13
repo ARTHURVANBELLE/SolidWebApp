@@ -8,6 +8,7 @@ import StravaActivities from "~/components/Activity/StravaActivities";
 import {ActivityFiles} from "~/components/Activity/add_files";
 import { upsertActivityAction } from "~/lib/activity";
 import { createSignal, on } from "solid-js";
+import MemberList from "~/components/User/MemberList";
 
 
 export default function NewActivity() {
@@ -44,7 +45,7 @@ export default function NewActivity() {
 
               {/* Slide 2: User List */}
               <Slide>
-                <UserList />
+                <MemberList />
                 <NextButton>Next step</NextButton>
               </Slide>
 
@@ -78,9 +79,8 @@ export default function NewActivity() {
               </Slide>
             </Slider>
             <input type="hidden" name="id" value={activityId() || ""} />
-            <input type="hidden" name="imageUrl" value={""} />
+            <input type="hidden" name="imageUrl" value="https://cyclotourisme-mag.com/wp-content/uploads/sites/2/2016/11/Cyclomontagnardes.jpg"/>
             <input type="hidden" name="comments" value={""} />
-            <input type="hidden" name="users" value={""} />
           </form>
         </div>
       </main>

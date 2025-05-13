@@ -1,31 +1,26 @@
 import { APIEvent } from "@solidjs/start/server";
-import { getUsersByTeam } from "~/lib/user";
+import bcrypt from "bcrypt";
+import { getUserById, addUserAction } from "~/lib/user";
 
 export async function GET(event: APIEvent) {
   try {
     const url = new URL(event.request.url);
-    const teamId = url.pathname.split("/").pop();
-
-    if (!teamId) {
-      return new Response(JSON.stringify({ error: "Team ID is required" }), {
+    
+    const userId = url.searchParams.get("userId");
+    
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "User ID is required" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
-
-    const users = await getUsersByTeam(parseInt(teamId));
-
-    if (!users) {
-      return new Response(JSON.stringify({ error: "No users found" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
+    
+    const users = await getUserById(parseInt(userId));
+    
     return new Response(JSON.stringify(users), {
+      status: 200,
       headers: { "Content-Type": "application/json" },
     });
-
   } catch (error) {
     return new Response(JSON.stringify({ error: "Failed to fetch users" }), {
       status: 500,

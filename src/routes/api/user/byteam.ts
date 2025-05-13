@@ -1,10 +1,10 @@
-import { db } from "../../../lib/db";
 import { APIEvent } from "@solidjs/start/server";
+import { getUsersByTeam } from "~/lib/user";
 
 export async function GET(event: APIEvent) {
   try {
     const url = new URL(event.request.url);
-    const teamId = url.pathname.split("/").pop();
+    const teamId = url.searchParams.get("userId");
 
     if (!teamId) {
       return new Response(JSON.stringify({ error: "Team ID is required" }), {
@@ -13,10 +13,7 @@ export async function GET(event: APIEvent) {
       });
     }
 
-    // Fetch users with the specific team ID
-    const users = await db.user.findMany({
-      where: { teamId: parseInt(teamId) },
-    });
+    const users = await getUsersByTeam(parseInt(teamId));
 
     if (!users) {
       return new Response(JSON.stringify({ error: "No users found" }), {

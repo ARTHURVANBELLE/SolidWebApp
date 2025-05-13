@@ -22,6 +22,48 @@ export const getUsersByTeam = query(async (teamId: number) => {
   });
 }, "getUsersByTeam");
 
+export const addUser = async (formData: FormData) => {
+  "use server";
+  const userSchema = z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string().email(),
+    teamId: z.coerce.number(),
+    imageUrl: z.string().optional(),
+    stravaId: z.coerce.number(),
+    isAdmin: z.coerce.boolean().optional(),
+    accessToken: z.string().optional(),
+    password: z
+      .string()
+      .min(8)
+      .transform(async (value) => {
+        return await bcrypt.hash(value, 10);
+      }),
+  });
+  const newUser = await userSchema.parseAsync({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    email: formData.get("email"),
+    teamId: formData.get("teamId"),
+    password: formData.get("password"),
+    imageUrl: formData.get("imageUrl"),
+    stravaId: formData.get("stravaId"),
+    accessToken: formData.get("accessToken"),
+    isAdmin: formData.get("isAdmin") === "on",
+  });
+  // Check if the user already exists
+  const existingUser = await db.user.findUnique({
+    where: { stravaId: newUser.stravaId },
+  });
+  if (existingUser) {
+    throw new Error("User with the given Strava ID already exists.");
+  }
+  return db.user.create({
+    data: newUser,
+  });
+};
+
+
 export const updateUser = async (formData: FormData) => {
   "use server";
 
@@ -75,3 +117,8 @@ export const updateUserAction = action(async (form: FormData) => {
   return await updateUser(form);
 }, "updateUserAction");
 
+export const addUserAction = action(async (form: FormData) => {
+  "use server";
+  return await addUser(form);
+}
+, "addUserAction");

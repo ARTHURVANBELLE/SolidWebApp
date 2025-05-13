@@ -1,5 +1,4 @@
 import { createResource, Show, For, createSignal } from "solid-js";
-import { A } from "@solidjs/router";
 
 interface StravaActivity {
   id: number;
@@ -41,7 +40,7 @@ export default function StravaActivities(props: StravaActivitiesProps) {
         return []; // Return empty array for initial SSR
       }
       
-      const url = getApiUrl('/api/strava/activities');
+      const url = getApiUrl('/api/strava/activities/get-lasts');
       console.log("Fetching from URL:", url);
       
       const response = await fetch(url);

@@ -1,5 +1,4 @@
 import { Component, createSignal, createEffect, For, Show } from "solid-js";
-import styles from "./add_files.module.css";
 
 interface ActivityFilesProps {
   activityId: string;
@@ -48,14 +47,15 @@ export const ActivityFiles: Component<ActivityFilesProps> = (props) => {
   };
 
   return (
-    <div class={styles.activityFiles}>
-      <h2>Activity Files</h2>
+    <div class="p-4 border border-gray-300 rounded-lg my-4">
+      <h2 class="text-xl font-semibold mb-3">Activity Files</h2>
       
-      <div class={styles.gpxSection}>
-        <h3>GPX Track</h3>
+      <div class="mt-4">
+        <h3 class="text-lg font-medium mb-2">GPX Track</h3>
         <button 
-          type="button" // Explicitly set type to prevent form submission
-          class={styles.gpxButton}
+          type="button"
+          class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors 
+                 disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={handleGpxSelection}
           disabled={!props.activityId || loading()}
         >
@@ -63,11 +63,11 @@ export const ActivityFiles: Component<ActivityFilesProps> = (props) => {
         </button>
         
         <Show when={error()}>
-          <p class={styles.errorMessage}>{error()}</p>
+          <p class="text-red-500 mt-2">{error()}</p>
         </Show>
         
         <Show when={gpxUrl()}>
-          <p class={styles.successMessage}>GPX file selected successfully</p>
+          <p class="text-green-500 mt-2">GPX file selected successfully</p>
         </Show>
       </div>
     </div>

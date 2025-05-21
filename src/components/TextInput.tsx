@@ -13,6 +13,7 @@ type TextInputProps = {
   onInput?: JSX.EventHandler<HTMLInputElement, InputEvent>;
   onChange?: JSX.EventHandler<HTMLInputElement, Event>;
   onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent>;
+  class?: string;
 };
 
 export function TextInput(props: TextInputProps) {

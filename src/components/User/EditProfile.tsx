@@ -1,154 +1,128 @@
-import { createSignal, createEffect, For, Show } from "solid-js";
-import { updateUserAction, getUserById } from "~/lib/user";
-import {TextInput} from "~/components/TextInput";
+import { createSignal, Show } from "solid-js";
+import { updateUserAction } from "~/lib/user";
+import { TextInput } from "~/components/TextInput";
 import TeamSelect from "../Team/TeamSelect";
-import { getSession, getUser } from "~/utils/session";
+import { getUser } from "~/utils/session";
 import { createAsync } from "@solidjs/router";
 
-// Define the user type
-type UserData = {
-  stravaId: number;
-  firstName: string;
-  lastName: string;
-  email: string | null;
-  password: string;
-  teamId: number | null;
-  imageUrl: string | null;
-  isAdmin: boolean | null;
-};
-
 export default function EditProfile() {
-  // Initialize with an empty array
-  const [user, setUser] = createSignal<UserData[]>([]);
-  const [loading, setLoading] = createSignal(true);
-  const [error, setError] = createSignal<string | null>(null);
-  const usersPerPage = 20;
-
-  // Add state for image preview
-  const [imagePreviewError, setImagePreviewError] = createSignal(false);
-  
-  const handleImageError = () => {
-    setImagePreviewError(true);
-  };
-  
-  const resetImageError = () => {
-    setImagePreviewError(false);
-  };
-
   // Fetch user data properly using createAsync outside of createEffect
   const userData = createAsync(() => getUser());
-
-  // Set up user data when it's available
-  createEffect(() => {
-    const currentUser = userData();
-    if (currentUser) {
-      setUser([currentUser as UserData]);
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  });
-
-  // Handle updates instantly
-  const handleUpdate = async (stravaId: number, field: string, value: string | number | null) => {
-    // Only update if there's data to update
-    if (user().length > 0) {
-      try {
-        setUser(user().map(user => user.stravaId === stravaId ? { ...user, [field]: value } : user));
-        const formData = new FormData();
-        formData.append(field, value?.toString() ?? '');
-        await updateUserAction(formData);
-      } catch (e) {
-        console.error(`Failed to update ${field}:`, e);
-      }
-    }
-  };
+  const [user, setUser] = createSignal(userData());
 
   return (
-    <main class="flex flex-col items-center p-6">
-      <h1 class="text-3xl font-bold text-sky-700 mb-6">User Management</h1>
+    <main class="flex flex-col items-center p-4 sm:p-6 max-w-7xl mx-auto">
+      <h1 class="text-2xl sm:text-3xl font-bold text-sky-700 mb-4 sm:mb-6">Your Profile</h1>
       
-      <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
-        <Show when={error()} fallback={null}>
-          <div class="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded">
-            {error()}
-          </div>
-        </Show>
-
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="border-b">
-              <th class="p-2">First Name</th>
-              <th class="p-2">Last Name</th>
-              <th class="p-2">Email</th>
-              <th class="p-2">Team</th>
-              <th class="p-2">Profile Picture</th>
-            </tr>
-          </thead>
-          <tbody>
-            <Show 
-              when={!loading() && user().length > 0} 
-              fallback={
-                <tr>
-                  <td colspan="5" class="p-2 text-center">
-                    {loading() ? "Loading user data..." : "No user data available."}
-                  </td>
-                </tr>
-              }
-            >
-              <tr class="border-b">
-                <td class="p-2">
-                  <TextInput name="firstName" type="text" value={user()[0].firstName} onInput={(e) => handleUpdate(user()[0].stravaId, "firstName", (e.target as HTMLInputElement).value)} />
-                </td>
-                <td class="p-2">
-                  <TextInput name="lastName" type="text" value={user()[0].lastName} onInput={(e) => handleUpdate(user()[0].stravaId, "lastName", (e.target as HTMLInputElement).value)} />
-                </td>
-                <td class="p-2">
-                  {/* Convert null to empty string to satisfy the type requirement */}
-                  <TextInput 
-                    name="email" 
-                    type="email" 
-                    value={user()[0].email || ''} 
-                    onInput={(e) => handleUpdate(user()[0].stravaId, "email", (e.target as HTMLInputElement).value)} 
-                  />
-                </td>
-                <td class="p-2">
-                  <TeamSelect name="team" />
-                </td>
-                <td class="p-2">
-                  <div class="flex flex-col space-y-2">
-                    <TextInput 
-                      name="imageUrl" 
-                      type="text" 
-                      value={user()[0].imageUrl || ''} 
-                      onInput={(e) => {
-                        resetImageError();
-                        handleUpdate(user()[0].stravaId, "imageUrl", (e.target as HTMLInputElement).value);
-                      }} 
-                    />
-                    <div class="mt-2 relative">
-                      <Show 
-                        when={user()[0].imageUrl && !imagePreviewError()} 
-                        fallback={
-                          <div class="w-20 h-20 bg-gray-200 flex items-center justify-center rounded">
-                            <span class="text-gray-400 text-xs text-center">No image<br/>available</span>
-                          </div>
-                        }
-                      >
-                        <img 
-                          src={user()[0].imageUrl || ''} 
-                          alt="Profile" 
-                          class="w-20 h-20 object-cover rounded" 
-                          onError={handleImageError}
-                        />
-                      </Show>
-                    </div>
+      <div class="w-full bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-sky-500 to-blue-600 p-4 sm:p-6">
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <div class="relative h-24 w-24 sm:h-32 sm:w-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+              <Show
+                when={user()?.imageUrl}
+                fallback={
+                  <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                   </div>
-                </td>
-              </tr>
-            </Show>
-          </tbody>
-        </table>
+                }
+              >
+                <img
+                  src={user()?.imageUrl || ""}
+                  alt="Profile"
+                  class="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/default-profile.png";
+                  }}
+                />
+              </Show>
+            </div>
+            <div class="text-center sm:text-left">
+              <h2 class="text-xl sm:text-2xl font-bold text-white">{user()?.firstName || ""} {user()?.lastName || ""}</h2>
+              <p class="text-blue-100">{user()?.email || "No email provided"}</p>
+            </div>
+          </div>
+        </div>
+
+        <form method="post" action={updateUserAction} class="p-4 sm:p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <TextInput
+                  name="firstName"
+                  type="text"
+                  value={user()?.firstName || ""}
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <TextInput
+                  name="lastName"
+                  type="text"
+                  value={user()?.lastName || ""}
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <TextInput
+                  name="email"
+                  type="email"
+                  value={user()?.email || ""}
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                />
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <TextInput
+                  name="password"
+                  type="password"
+                  placeholder="Leave blank to keep current password"
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                />
+                <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Team</label>
+                <TeamSelect 
+                  name="teamId" 
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" 
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Profile Image URL</label>
+                <TextInput
+                  name="imageUrl"
+                  type="text"
+                  value={user()?.imageUrl || ""}
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-8 flex justify-end">
+            <button
+              type="submit"
+              class="px-6 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-medium rounded-md shadow-md hover:from-sky-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+            >
+              Save Changes
+            </button>
+          </div>
+          
+          <input type="hidden" name="stravaId" value={user()?.stravaId || ""} />
+          <input type="hidden" name="accessToken" value={user()?.accessToken || ""} />
+        </form>
       </div>
     </main>
   );

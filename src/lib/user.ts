@@ -63,15 +63,18 @@ export const addUser = async (formData: FormData) => {
   });
 };
 
-
 export const updateUser = async (formData: FormData) => {
   "use server";
 
+  console.log("Form Data:", formData);
+
+  
+  // Parse and validate the incoming data
   const userSchema = z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email(),
-    teamId: z.coerce.number(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().email().optional(),
+    teamId: z.coerce.number().optional(),
     imageUrl: z.string().optional(),
     stravaId: z.coerce.number(),
     isAdmin: z.coerce.boolean().optional(),
@@ -85,30 +88,73 @@ export const updateUser = async (formData: FormData) => {
       .optional(),
   });
 
-  const updatedUser = await userSchema.parseAsync({
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    email: formData.get("email"),
-    teamId: formData.get("teamId"),
-    password: formData.get("password"),
-    imageUrl: formData.get("imageUrl"),
-    stravaId: formData.get("stravaId"),
-    accessToken: formData.get("accessToken"),
-    isAdmin: formData.get("isAdmin") === "on",
+  // Prepare update data object, omitting empty fields
+  const updateData: Record<string, any> = {};
+  
+  // Only include non-empty fields
+  if (formData.get("firstName")?.toString().trim()) {
+    updateData.firstName = formData.get("firstName")?.toString().trim();
+  }
+  
+  if (formData.get("lastName")?.toString().trim()) {
+    updateData.lastName = formData.get("lastName")?.toString().trim();
+  }
+  
+  if (formData.get("email")?.toString().trim()) {
+    updateData.email = formData.get("email")?.toString().trim();
+  }
+  
+  if (formData.get("teamId")?.toString().trim()) {
+    updateData.teamId = Number(formData.get("teamId"));
+  }
+  
+  if (formData.get("imageUrl")?.toString().trim()) {
+    updateData.imageUrl = formData.get("imageUrl")?.toString().trim();
+  }
+  
+  if (formData.get("accessToken")?.toString().trim()) {
+    updateData.accessToken = formData.get("accessToken")?.toString().trim();
+  }
+  
+  // Handle password specially since it requires hashing
+  if (formData.get("password")?.toString().trim()) {
+    updateData.password = await bcrypt.hash(
+      formData.get("password")!.toString(),
+      10
+    );
+  }
+  
+  // Handle isAdmin checkbox
+  const isAdminValue = formData.get("isAdmin");
+  if (isAdminValue !== null) {
+    updateData.isAdmin = isAdminValue === "on" || isAdminValue === "true";
+  }
+
+  // Ensure we have the stravaId for the WHERE clause
+  const stravaId = Number(formData.get("stravaId"));
+  if (isNaN(stravaId)) {
+    throw new Error("Strava ID is required and must be a number");
+  }
+
+  // Validate the data that we're actually updating
+  const validatedData = await userSchema.parseAsync({
+    ...updateData,
+    stravaId, // Always include stravaId for validation
   });
 
   // Find the user by stravaId
   const existingUser = await db.user.findUnique({
-    where: { stravaId: updatedUser.stravaId },
+    where: { stravaId },
   });
 
   if (!existingUser) {
     throw new Error("User with the given Strava ID not found.");
   }
 
+  // Only update with the non-empty fields
   return db.user.update({
-    where: { stravaId: updatedUser.stravaId },
-    data: updatedUser,
+    where: { stravaId },
+    data: updateData,
   });
 };
 

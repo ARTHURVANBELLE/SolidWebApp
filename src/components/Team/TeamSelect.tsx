@@ -9,10 +9,11 @@ type Team = {
 };
 
 type TeamSelectProps = {
-  name: string;
+  name?: string; // Make name optional with default value
   required?: boolean;
   defaultValue?: number;
   disabled?: boolean;
+  class?: string;
 };
 
 // Server action to fetch teams
@@ -27,6 +28,9 @@ export default function TeamSelect(props: TeamSelectProps) {
   );
   const teams = createAsyncStore(() => getTeams());
   const [isOpen, setIsOpen] = createSignal(false);
+
+  // Use "teamId" as default name if none provided
+  const inputName = () => props.name || "teamId";
 
   // Toggle dropdown visibility
   const toggleDropdown = () => setIsOpen(!isOpen());
@@ -46,13 +50,14 @@ export default function TeamSelect(props: TeamSelectProps) {
   });
 
   return (
-    <div class="relative team-dropdown-container">
-      {/* Hidden input field to store the selected value for form submission */}
+    <div class={`relative team-dropdown-container ${props.class || ''}`}>
+      {/* Hidden input field with correct name for form submission */}
       <input
         type="hidden"
-        name={props.name}
+        name={inputName()}
         value={selectedId() || ""}
         required={props.required}
+        disabled={props.disabled}
       />
 
       <button
@@ -62,11 +67,12 @@ export default function TeamSelect(props: TeamSelectProps) {
           e.stopPropagation();
           toggleDropdown();
         }}
+        disabled={props.disabled}
       >
         <span>
           {selectedId()
             ? teams()?.find((t: Team) => t.id === selectedId())?.name
-            : "Select"}
+            : "Select Team"}
         </span>
         <span class="ml-2">▼</span>
       </button>

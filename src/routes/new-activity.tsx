@@ -1,13 +1,12 @@
 import { TextInput } from "~/components/TextInput";
 import Slider from "~/components/Slider";
-import UserList from "~/components/User/MemberList";
 import Slide from "~/components/Slide";
 import { NextButton } from "~/components/NextButton";
 import Layout from "~/components/Layout";
 import StravaActivities from "~/components/Activity/StravaActivities";
 import {ActivityFiles} from "~/components/Activity/add_files";
 import { upsertActivityAction } from "~/lib/activity";
-import { createSignal, on } from "solid-js";
+import { createSignal } from "solid-js";
 import MemberList from "~/components/User/MemberList";
 
 

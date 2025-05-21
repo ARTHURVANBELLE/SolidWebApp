@@ -9,7 +9,7 @@ type Team = {
 };
 
 type TeamSelectProps = {
-  name?: string; // Make name optional with default value
+  name?: string; // Made name optional with default value
   required?: boolean;
   defaultValue?: number;
   disabled?: boolean;

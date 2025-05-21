@@ -4,6 +4,8 @@ import { useLocation } from "@solidjs/router";
 type NavLinkProps = {
   href: string;
   children: JSXElement;
+  class?: string;
+  activeClass?: string;
 };
 
 export function NavLink(props: NavLinkProps) {

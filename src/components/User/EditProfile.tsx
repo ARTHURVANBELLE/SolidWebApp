@@ -127,9 +127,7 @@ export default function EditProfile() {
   const userResource = createAsync(() => getUser());
   
   return (
-    <main class="flex flex-col items-center p-4 sm:p-6 max-w-7xl mx-auto">
-      <h1 class="text-2xl sm:text-3xl font-bold text-sky-700 mb-4 sm:mb-6">Your Profile</h1>
-      
+    <main class="flex flex-col items-center p-4 sm:p-6 max-w-7xl mx-auto">      
       <ErrorBoundary fallback={(error) => (
         <div class="w-full bg-red-50 border border-red-200 p-6 rounded-lg">
           <h3 class="text-lg font-medium text-red-800 mb-2">Error Loading Profile</h3>

@@ -4,32 +4,16 @@ import Layout from "~/components/Layout";
 import EditProfile from "~/components/User/EditProfile";
 
 export default function Profile() {
-  const [formData, setFormData] = createStore({
-    user: {
-      name: "",
-      email: "",
-      password: "",
-      teamId: "",
-      pictureURL: "",
-    },
-  });
-
   return (
     <Layout protected={true}>
-    <main class="flex flex-col min-h-full w-full">
-      {/* Title Section at the Top */}
-      <h1 class="text-5xl text-sky-700 font-bold uppercase my-8 text-center">
-        Edit profile information
-      </h1>
-
-      {/* Slider takes up remaining space */}
-      <div class="flex-1 w-screen max-w-full h-full">
-        <form>
-
-        </form>
-        <EditProfile />
-      </div>
-    </main>
+      <main class="flex flex-col min-h-full w-full">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl text-blue-500 font-bold my-6 sm:my-8 text-center">
+          Edit Profile
+        </h1>
+        <div class="w-full max-w-7xl mx-auto px-4">
+          <EditProfile />
+        </div>
+      </main>
     </Layout>
   );
 }

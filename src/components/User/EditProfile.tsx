@@ -16,8 +16,19 @@ function ProfileContent(props: { userData: any }) {
               when={props.userData?.imageUrl}
               fallback={
                 <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-16 w-16 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </div>
               }
@@ -33,8 +44,12 @@ function ProfileContent(props: { userData: any }) {
             </Show>
           </div>
           <div class="text-center sm:text-left">
-            <h2 class="text-xl sm:text-2xl font-bold text-white">{props.userData?.firstName || ""} {props.userData?.lastName || ""}</h2>
-            <p class="text-blue-100">{props.userData?.email || "No email provided"}</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">
+              {props.userData?.firstName || ""} {props.userData?.lastName || ""}
+            </h2>
+            <p class="text-blue-100">
+              {props.userData?.email || "No email provided"}
+            </p>
           </div>
         </div>
       </div>
@@ -43,7 +58,9 @@ function ProfileContent(props: { userData: any }) {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                First Name
+              </label>
               <TextInput
                 name="firstName"
                 type="text"
@@ -51,9 +68,11 @@ function ProfileContent(props: { userData: any }) {
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
               <TextInput
                 name="lastName"
                 type="text"
@@ -61,9 +80,11 @@ function ProfileContent(props: { userData: any }) {
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
+              </label>
               <TextInput
                 name="email"
                 type="email"
@@ -72,30 +93,38 @@ function ProfileContent(props: { userData: any }) {
               />
             </div>
           </div>
-          
+
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                New Password
+              </label>
               <TextInput
                 name="password"
                 type="password"
                 placeholder="Leave blank to keep current password"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
-              <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
+              <p class="text-xs text-gray-500 mt-1">
+                Must be at least 8 characters
+              </p>
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Team</label>
-              <TeamSelect 
-                name="teamId" 
-                defaultValue={props.userData?.teamId || ""}
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" 
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Team
+              </label>
+              <TeamSelect
+                name="teamId"
+                defaultValue={props.userData?.teamId || undefined}
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Profile Image URL</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Profile Image URL
+              </label>
               <TextInput
                 name="imageUrl"
                 type="text"
@@ -105,7 +134,7 @@ function ProfileContent(props: { userData: any }) {
             </div>
           </div>
         </div>
-        
+
         <div class="mt-8 flex justify-end">
           <button
             type="submit"
@@ -114,9 +143,17 @@ function ProfileContent(props: { userData: any }) {
             Save Changes
           </button>
         </div>
-        
-        <input type="hidden" name="stravaId" value={props.userData?.stravaId || ""} />
-        <input type="hidden" name="accessToken" value={props.userData?.accessToken || ""} />
+
+        <input
+          type="hidden"
+          name="stravaId"
+          value={props.userData?.stravaId || ""}
+        />
+        <input
+          type="hidden"
+          name="accessToken"
+          value={props.userData?.accessToken || ""}
+        />
       </form>
     </div>
   );
@@ -125,27 +162,33 @@ function ProfileContent(props: { userData: any }) {
 export default function EditProfile() {
   // Create the async resource but don't immediately access it
   const userResource = createAsync(() => getUser());
-  
+
   return (
-    <main class="flex flex-col items-center p-4 sm:p-6 max-w-7xl mx-auto">      
-      <ErrorBoundary fallback={(error) => (
-        <div class="w-full bg-red-50 border border-red-200 p-6 rounded-lg">
-          <h3 class="text-lg font-medium text-red-800 mb-2">Error Loading Profile</h3>
-          <p class="text-red-600">{error.toString()}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Retry
-          </button>
-        </div>
-      )}>
-        <Suspense fallback={
-          <div class="w-full bg-white shadow-lg rounded-lg p-12 flex flex-col items-center">
-            <div class="w-12 h-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin mb-4"></div>
-            <p class="text-gray-600">Loading your profile data...</p>
+    <main class="flex flex-col items-center p-4 sm:p-6 max-w-7xl mx-auto">
+      <ErrorBoundary
+        fallback={(error) => (
+          <div class="w-full bg-red-50 border border-red-200 p-6 rounded-lg">
+            <h3 class="text-lg font-medium text-red-800 mb-2">
+              Error Loading Profile
+            </h3>
+            <p class="text-red-600">{error.toString()}</p>
+            <button
+              onClick={() => window.location.reload()}
+              class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Retry
+            </button>
           </div>
-        }>
+        )}
+      >
+        <Suspense
+          fallback={
+            <div class="w-full bg-white shadow-lg rounded-lg p-12 flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin mb-4"></div>
+              <p class="text-gray-600">Loading your profile data...</p>
+            </div>
+          }
+        >
           {/* Only access the resource inside the Suspense boundary */}
           <ProfileContent userData={userResource()} />
         </Suspense>

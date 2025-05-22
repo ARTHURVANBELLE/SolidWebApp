@@ -1,7 +1,7 @@
 // TeamSelect.tsx
 import { createAsyncStore, query } from "@solidjs/router";
-import { createSignal, onCleanup, onMount, Show, Suspense } from "solid-js";
-import { db } from "~/lib/db";
+import { createSignal, createEffect, For } from "solid-js";
+import { getTeams } from "~/lib/team";
 
 type Team = {
   id: number;
@@ -9,99 +9,52 @@ type Team = {
 };
 
 type TeamSelectProps = {
-  name?: string; // Made name optional with default value
+  name?: string;
   required?: boolean;
   defaultValue?: number;
-  disabled?: boolean;
   class?: string;
 };
 
-// Server action to fetch teams
-const getTeams = query(async function () {
-  "use server";
-  return await db.team.findMany();
-}, "getTeams");
-
 export default function TeamSelect(props: TeamSelectProps) {
+  // Initialize selectedId with props.defaultValue, ensuring proper type conversion
   const [selectedId, setSelectedId] = createSignal<number | null>(
-    props.defaultValue || null
+    props.defaultValue !== undefined ? 
+      (typeof props.defaultValue === 'string' ? parseInt(props.defaultValue) : props.defaultValue) : 
+      null
   );
   const teams = createAsyncStore(() => getTeams());
-  const [isOpen, setIsOpen] = createSignal(false);
 
-  // Use "teamId" as default name if none provided
-  const inputName = () => props.name || "teamId";
-
-  // Toggle dropdown visibility
-  const toggleDropdown = () => setIsOpen(!isOpen());
-
-  // Close dropdown when clicking outside
-  const handleClickOutside = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (!target.closest(".team-dropdown-container")) {
-      setIsOpen(false);
+  // Add an effect to update selectedId when defaultValue changes
+  createEffect(() => {
+    if (props.defaultValue !== undefined) {
+      const newValue = typeof props.defaultValue === 'string' ? 
+        parseInt(props.defaultValue) : props.defaultValue;
+      setSelectedId(newValue);
     }
-  };
-
-  // Add event listener for outside clicks
-  onMount(() => {
-    document.addEventListener("click", handleClickOutside);
-    onCleanup(() => document.removeEventListener("click", handleClickOutside));
   });
 
+  const handleChange = (event: Event) => {
+    const value = (event.target as HTMLSelectElement).value;
+    setSelectedId(value ? parseInt(value) : null);
+  };
+
   return (
-    <div class={`relative team-dropdown-container ${props.class || ''}`}>
-      {/* Hidden input field with correct name for form submission */}
-      <input
-        type="hidden"
-        name={inputName()}
-        value={selectedId() || ""}
+    <div class="relative">
+      <select
+        name={props.name}
         required={props.required}
-        disabled={props.disabled}
-      />
-
-      <button
-        type="button" // Important: use type="button" to prevent form submission on click
-        class="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between w-full"
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleDropdown();
-        }}
-        disabled={props.disabled}
+        class={`block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${props.class}`}
+        value={selectedId() || ""}
+        onChange={handleChange}
       >
-        <span>
-          {selectedId()
-            ? teams()?.find((t: Team) => t.id === selectedId())?.name
-            : "Select Team"}
-        </span>
-        <span class="ml-2">▼</span>
-      </button>
-
-      {isOpen() && (
-        <ul class="absolute w-full bg-white border rounded mt-1 shadow-lg max-h-60 overflow-y-auto z-10">
-          <Suspense fallback={<p>Loading teams...</p>}>
-            <Show when={teams()} fallback={<p>No teams available</p>}>
-              {teams()?.map((team: Team) => (
-                <li
-                  class="px-4 py-2 cursor-pointer hover:bg-gray-200"
-                  classList={{ "bg-blue-100": selectedId() === team.id }}
-                  onClick={() => {
-                    setSelectedId(team.id);
-                    setIsOpen(false);
-                  }}
-                >
-                  {team.name}
-                </li>
-              ))}
-            </Show>
-          </Suspense>
-        </ul>
-      )}
-
-      {/* Validation message */}
-      {props.required && !selectedId() && (
-        <p class="text-xs text-red-500 mt-1">Please select a team</p>
-      )}
+        <For each={teams()} fallback={<option disabled>Loading teams...</option>}>
+          {(team: Team) => (
+            <option value={team.id} selected={selectedId() === team.id}>
+              {team.name}
+            </option>
+          )}
+        </For>
+      </select>
     </div>
   );
 }

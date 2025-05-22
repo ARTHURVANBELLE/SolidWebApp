@@ -28,13 +28,14 @@ function UserTable(props: { userData: UserData[] }) {
   };
 
   return (
-    <div class="w-full max-w-4xl bg-white shadow-md rounded-lg p-6">
+    <div class="w-full max-w-6xl bg-white shadow-md rounded-lg p-6 overflow-x-auto">
       {/* Header Row */}
-      <div class="grid grid-cols-5 gap-2 font-bold border-b pb-2 mb-2">
+      <div class="grid grid-cols-6 gap-2 font-bold border-b pb-2 mb-2 min-w-[1000px]">
         <div class="p-2">First Name</div>
         <div class="p-2">Last Name</div>
         <div class="p-2">Email</div>
         <div class="p-2">Team</div>
+        <div class="p-2">Admin</div>
         <div class="p-2">Actions</div>
       </div>
 
@@ -44,7 +45,7 @@ function UserTable(props: { userData: UserData[] }) {
           <form 
             method="post" 
             action={updateUserAction} 
-            class="grid grid-cols-5 gap-2 border-b py-2"
+            class="grid grid-cols-6 gap-2 border-b py-2 min-w-[1000px]"
           >
             <div class="p-2">
               <TextInput
@@ -77,17 +78,30 @@ function UserTable(props: { userData: UserData[] }) {
                 class="w-full"
               />
             </div>
-            <div class="p-2">
+            <div class="p-2 flex justify-center items-center">
               <input
                 type="checkbox"
-                name="isAdmin"
+                id={`isAdmin-${user.stravaId}`}
                 checked={user.isAdmin || false}
+                class="w-5 h-5"
+                onChange={(e) => {
+                  const hiddenInput = document.getElementById(`isAdmin-hidden-${user.stravaId}`);
+                  if (hiddenInput) {
+                    (hiddenInput as HTMLInputElement).value = e.target.checked ? "on" : "off";
+                  }
+                }}
               />
             </div>
+            
             <div class="p-2 flex items-center">
               {/* Hidden fields for user identity */}
               <input type="hidden" name="stravaId" value={user.stravaId} />
-              <input type="hidden" name="isAdmin" value={user.isAdmin ? "on" : "off"} />
+              <input 
+                type="hidden" 
+                name="isAdmin" 
+                id={`isAdmin-hidden-${user.stravaId}`}
+                value={user.isAdmin ? "on" : "off"} 
+              />
               
               <button 
                 type="submit"
@@ -148,10 +162,10 @@ export default function UserManager() {
   });
   
   return (
-    <main class="flex flex-col items-center p-6">
+    <main class="flex flex-col items-center p-6 w-full">
       <h1 class="text-3xl font-bold text-red-600 mb-6">User Management</h1>
 
-      <div class="w-full flex justify-end mb-4">
+      <div class="w-full max-w-6xl flex justify-end mb-4">
         <button
           onClick={loadUsers}
           class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2 transition-colors"

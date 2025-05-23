@@ -1,18 +1,30 @@
 import { TextInput } from "~/components/TextInput";
 import Slider from "~/components/Slider";
 import Slide from "~/components/Slide";
-import { NextButton } from "~/components/NextButton";
 import Layout from "~/components/Layout";
-import StravaActivities from "~/components/Activity/StravaActivities";
-import {ActivityFiles} from "~/components/Activity/add_files";
+import { ActivityFiles } from "~/components/Activity/add_files";
 import { upsertActivityAction } from "~/lib/activity";
-import { createSignal } from "solid-js";
+import { createSignal, Show, createResource, Suspense, createEffect, onMount } from "solid-js";
 import MemberList from "~/components/User/MemberList";
+import Slide_1 from "~/components/Activity/Slide_1";
+import { getSessionData } from "~/utils/session";
+import { createAsync } from "@solidjs/router";
+import { ActivitySelector, StravaActivity } from "~/components/Activity/ActivitySelector";
+import { getStravaActivities } from "~/lib/stravaActivities";
 
 
 export default function NewActivity() {
-
+  const session = createAsync(() => getSessionData());
   const [activityId, setActivityId] = createSignal<string | null>(null);
+  const [activities, { refetch }] = createResource(
+    () => session()?.accessToken,
+    async (accessToken) => {
+      if (!accessToken) return [];
+      const activities = await getStravaActivities(accessToken, 10);
+      console.log("Activities fetched:", activities);
+      return activities;
+    }
+  );
 
   return (
     <Layout protected={true}>
@@ -27,36 +39,44 @@ export default function NewActivity() {
           <form method="post" action={upsertActivityAction}>
             <Slider>
               <Slide>
-                <TextInput
-                  name="title"
-                  type="text"
-                  placeholder="Activity name"
-                  required
-                />
-                <TextInput
-                  name="date"
-                  type="date"
-                  placeholder="Activity date"
-                  required
-                />
-                <NextButton>Next step</NextButton>
+                <Slide_1 />
               </Slide>
 
               {/* Slide 2: User List */}
               <Slide>
                 <MemberList />
-                <NextButton>Next step</NextButton>
               </Slide>
 
-              {/* Slide 3 */}
+              {/* Slide 3 - Only Session Data with Suspense */}
               <Slide>
-                <StravaActivities onSelectionChange={setActivityId}/>
-                <NextButton>Next step</NextButton>
+                <h2 class="text-2xl font-bold mb-4">Your Strava Activities</h2>
+
+                {/* Suspense for session and activities data */}
+                <Suspense
+                  fallback={
+                    <div class="flex justify-center items-center p-8">
+                      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                      <p class="ml-3">Loading Strava activities...</p>
+                    </div>
+                  }
+                >
+                  <div class="bg-white shadow rounded-lg p-6">
+                    <ActivitySelector
+                      activities={activities() || []}
+                      onActivitySelected={(activityId) => {
+                        setActivityId(activityId);
+                        console.log("Selected activity ID:", activityId);
+                      }}
+                      selectedActivityId={activityId()}
+                      name="activityId"
+                    />
+                  </div>
+                </Suspense>
               </Slide>
 
               {/* Slide 4 */}
               <Slide>
-                <ActivityFiles 
+                <ActivityFiles
                   activityId={activityId() || ""}
                   onGpxChange={(gpxUrl) => {}}
                   onImageChange={(imageUrl) => {}}
@@ -65,21 +85,23 @@ export default function NewActivity() {
                   name="description"
                   type="text"
                   placeholder="Activity description"
-                  required = {false}
+                  required={false}
                 />
-                <div class="flex flex-col gap-2 mt-4">
-                  <button
-                    type="submit"
-                    class="btn btn-primary bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition"
-                  >
-                    Register Activity
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  class="bg-blue-600 text-white py-2 px-4 rounded transition"
+                >
+                  Register Activity
+                </button>
+                <input type="hidden" name="id" value={activityId() || ""} />
+                <input
+                  type="hidden"
+                  name="imageUrl"
+                  value="https://cyclotourisme-mag.com/wp-content/uploads/sites/2/2016/11/Cyclomontagnardes.jpg"
+                />
+                <input type="hidden" name="comments" value={""} />
               </Slide>
             </Slider>
-            <input type="hidden" name="id" value={activityId() || ""} />
-            <input type="hidden" name="imageUrl" value="https://cyclotourisme-mag.com/wp-content/uploads/sites/2/2016/11/Cyclomontagnardes.jpg"/>
-            <input type="hidden" name="comments" value={""} />
           </form>
         </div>
       </main>

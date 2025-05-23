@@ -3,27 +3,43 @@ import { getSession } from "~/utils/session";
 
 export async function GET(event: APIEvent) {
   try {
-    // Get the session directly
-    const session = await getSession();
+    // Best practice: Get access token from Authorization header only
+    let accessToken = event.request.headers.get("Authorization");
     
-    // Check if tokens exist in the session
-    if (!session.data?.accessToken) {
-      console.error("No access token found in session", session.data);
+    // Remove Bearer prefix if present
+    if (accessToken && accessToken.startsWith("Bearer ")) {
+      accessToken = accessToken.substring(7);
+    } else {
+      // For backward compatibility, check query parameters (less secure)
+      // TODO: Deprecate this method in the future
+      const url = new URL(event.request.url);
+      accessToken = url.searchParams.get("accessToken");
+      
+      console.warn("Using access token from query parameters is less secure. Consider using Authorization header instead.");
+    }
+
+    // Check if tokens exist
+    if (!accessToken) {
+      console.error("No access token found in request");
       return new Response(JSON.stringify({ 
         error: "Not authenticated with Strava",
-        session: "No access token found"
+        message: "Please provide an access token in the Authorization header (preferred) or as an accessToken query parameter"
       }), {
         status: 401,
         headers: { "Content-Type": "application/json" }
       });
     }
     
-    console.log("Session retrieved successfully, access token exists");
+    console.log("Access token retrieved successfully from request");
     
-    // Fetch the last 10 activities from Strava API
-    const response = await fetch("https://www.strava.com/api/v3/athlete/activities?per_page=10", {
+    // Get count from query params or default to 10
+    const url = new URL(event.request.url);
+    const count = url.searchParams.get("count") || "10";
+    
+    // Fetch activities from Strava API
+    const response = await fetch(`https://www.strava.com/api/v3/athlete/activities?per_page=${count}`, {
       headers: {
-        Authorization: `Bearer ${session.data.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     

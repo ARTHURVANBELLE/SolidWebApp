@@ -8,7 +8,7 @@ import Layout from "~/components/Layout";
 import { createAsync, createAsyncStore } from "@solidjs/router";
 
 export default function News() {
-  const activities = createAsyncStore(() => getActivities(5));
+  const activities = createAsyncStore(() => getActivities(15));
 
   return (
     <Layout protected={true}>
@@ -33,18 +33,21 @@ export default function News() {
                 <div class="w-full max-w-2xl bg-white shadow-md rounded-lg p-4 mb-4">
                   <h2 class="text-xl font-bold">{activity.title}</h2>
                   <p class="text-gray-600">{activity.description}</p>
-                  <p class="text-gray-500">Distance: {activity.imageUrl}</p>
-                  <p class="text-gray-500">
-                    Date: {activity.datetime.toString()}
-                  </p>
-                  <p class="text-gray-500">
-                    Number of cyclists: {activity.users.length}
-                    </p>
                   <img
                     src={activity.imageUrl[0]}
                     alt="Activity Image"
                     class="w-full h-auto rounded-lg mt-4"
                   />
+                  <p class="text-gray-500">
+                    Activity Time: {activity.movingTime} minutes
+                  </p>
+                  <p class="text-gray-500">Distance: {activity.distance} km</p>
+                  <p class="text-gray-500">
+                    Date: {activity.datetime.toString()}
+                  </p>
+                  <p class="text-gray-500">
+                    Number of cyclists: {activity.users.length}
+                  </p>
                 </div>
               )}
             </For>

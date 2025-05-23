@@ -6,6 +6,9 @@ export type ActivityWithUsers = {
   id: number;
   title: string;
   datetime: string | Date;
+  movingTime : number;
+  distance: number;
+  delegueId: number;
   description: string | null;
   gpxUrl: string | null;
   imageUrl: string[];
@@ -164,6 +167,9 @@ export const getActivities = async (activityNumber: number): Promise<ActivityWit
     id: Number(activity.id),
     title: activity.title,
     datetime: activity.datetime,
+    movingTime: activity.movingTime ?? 0,
+    distance: activity.distance ?? 0,
+    delegueId: activity.delegueId ?? 0,
     description: activity.description,
     gpxUrl: activity.gpxUrl,
     imageUrl: activity.imageUrl.map((img) => img.url),

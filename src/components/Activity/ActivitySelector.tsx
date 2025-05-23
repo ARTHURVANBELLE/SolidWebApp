@@ -22,15 +22,18 @@ interface ActivitySelectorProps {
 }
 
 export function ActivitySelector(props: ActivitySelectorProps) {
+  const [selectedActivity, setSelectedActivity] =
+    createSignal<StravaActivity | null>(null);
+
   // Format the date to be more readable
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
   // Format distance to kilometers
   const formatDistance = (meters: number) => {
-    return (meters / 1000).toFixed(2) + ' km';
+    return (meters / 1000).toFixed(2) + " km";
   };
 
   // Format time from seconds to HH:MM:SS
@@ -38,8 +41,14 @@ export function ActivitySelector(props: ActivitySelectorProps) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
-    return `${hours ? hours + 'h ' : ''}${minutes}m ${secs}s`;
+
+    return `${hours ? hours + "h " : ""}${minutes}m ${secs}s`;
+  };
+
+  // Handle activity selection
+  const handleActivityClick = (activity: StravaActivity) => {
+    setSelectedActivity(activity);
+    props.onActivitySelected(activity.id);
   };
 
   return (
@@ -48,61 +57,85 @@ export function ActivitySelector(props: ActivitySelectorProps) {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <For each={props.activities}>
           {(activity) => (
-            <div 
+            <div
               class={`rounded-lg shadow-md p-4 cursor-pointer transition-all duration-200 hover:shadow-lg 
-                ${props.selectedActivityId === activity.id 
-                  ? 'bg-blue-50 border-2 border-blue-500' 
-                  : 'bg-white border border-gray-200 hover:bg-gray-50'}`}
-              onClick={() => props.onActivitySelected(activity.id)}
+                ${
+                  props.selectedActivityId === activity.id
+                    ? "bg-blue-50 border-2 border-blue-500"
+                    : "bg-white border border-gray-200 hover:bg-gray-50"
+                }`}
+              onClick={() => handleActivityClick(activity)}
             >
-              <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">{activity.name}</h3>
+              <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">
+                {activity.name}
+              </h3>
               <div class="space-y-1 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-gray-600 font-medium">Type:</span> 
+                  <span class="text-gray-600 font-medium">Type:</span>
                   <span class="text-gray-800">{activity.type}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600 font-medium">Date:</span> 
-                  <span class="text-gray-800">{formatDate(activity.start_date)}</span>
+                  <span class="text-gray-600 font-medium">Date:</span>
+                  <span class="text-gray-800">
+                    {formatDate(activity.start_date)}
+                  </span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600 font-medium">Distance:</span> 
-                  <span class="text-gray-800">{formatDistance(activity.distance)}</span>
+                  <span class="text-gray-600 font-medium">Distance:</span>
+                  <span class="text-gray-800">
+                    {formatDistance(activity.distance)}
+                  </span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600 font-medium">Time:</span> 
-                  <span class="text-gray-800">{formatTime(activity.moving_time)}</span>
+                  <span class="text-gray-600 font-medium">Time:</span>
+                  <span class="text-gray-800">
+                    {formatTime(activity.moving_time)}
+                  </span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-gray-600 font-medium">Elevation:</span> 
-                  <span class="text-gray-800">{activity.total_elevation_gain}m</span>
+                  <span class="text-gray-600 font-medium">Elevation:</span>
+                  <span class="text-gray-800">
+                    {activity.total_elevation_gain}m
+                  </span>
                 </div>
               </div>
             </div>
           )}
         </For>
       </div>
-            {/* Bottom centered button with margin - unchanged */}
-            <div class="mt-10 flex justify-center w-full">
-              <NextButton 
-                type="button" 
-                class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-8 py-3 rounded-lg font-medium shadow-md hover:from-sky-600 hover:to-blue-700 transition-all duration-200 flex items-center"
-              >
-                <span>Last Step (Pictures and GPX)</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 ml-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </NextButton>
-            </div>
+      {/* Bottom centered button with margin - unchanged */}
+      <div class="mt-10 flex justify-center w-full">
+        <NextButton
+          type="button"
+          class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-8 py-3 rounded-lg font-medium shadow-md hover:from-sky-600 hover:to-blue-700 transition-all duration-200 flex items-center"
+        >
+          <span>Last Step (Pictures and GPX)</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 ml-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </NextButton>
+
+        {/* Hidden input fields */}
+        <input
+          type="hidden"
+          name="distance"
+          value={formatDistance(selectedActivity()?.distance || 0)}
+        />
+        <input
+          type="hidden"
+          name="movingTime"
+          value={formatTime(selectedActivity()?.moving_time || 0)}
+        />
+      </div>
     </div>
   );
 }

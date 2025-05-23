@@ -31,6 +31,11 @@ export default function NewActivity() {
     }
   );
 
+  const delegueId = () => {
+    const userId = session()?.stravaId;
+    return userId;
+  }
+
   return (
     <Layout protected={true}>
       <main class="flex flex-col min-h-full w-full">
@@ -97,6 +102,7 @@ export default function NewActivity() {
                   value="https://cyclotourisme-mag.com/wp-content/uploads/sites/2/2016/11/Cyclomontagnardes.jpg"
                 />
                 <input type="hidden" name="comments" value={""} />
+                <input type="hidden" name="delegueId" value={delegueId()} />
               </Slide>
             </Slider>
           </form>

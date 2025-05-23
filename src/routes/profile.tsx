@@ -1,5 +1,3 @@
-import { TextInput } from "~/components/TextInput";
-import { createStore } from "solid-js/store";
 import Layout from "~/components/Layout";
 import EditProfile from "~/components/User/EditProfile";
 

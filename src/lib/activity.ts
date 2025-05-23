@@ -2,6 +2,16 @@ import { action } from "@solidjs/router";
 import { db } from "./db";
 import { nullable, z } from "zod";
 
+export type ActivityWithUsers = {
+  id: number;
+  title: string;
+  datetime: string | Date;
+  description: string | null;
+  gpxUrl: string | null;
+  imageUrl: string[];
+  users: { userId: number }[];
+};
+
 export const upsertActivity = async (formData: FormData) => {
   "use server";
 
@@ -137,7 +147,7 @@ export const upsertActivity = async (formData: FormData) => {
   });
 };
 
-export const getActivities = async (activityNumber: number) => {
+export const getActivities = async (activityNumber: number): Promise<ActivityWithUsers[]> => {
   "use server";
 
   const activities = await db.activity.findMany({
@@ -151,7 +161,7 @@ export const getActivities = async (activityNumber: number) => {
     },
   });
   return activities.map((activity) => ({
-    id: activity.id,
+    id: Number(activity.id),
     title: activity.title,
     datetime: activity.datetime,
     description: activity.description,
@@ -168,7 +178,7 @@ export const upsertActivityAction = action(async (form: FormData) => {
   await upsertActivity(form);
 }, "addActivityAction");
 
-export const getActivitiesAction = action(async (activityNumber: number) => {
+export const getActivitiesAction = action(async (activityNumber: number): Promise<ActivityWithUsers[]> => {
   "use server";
-  await getActivities(activityNumber);
+  return await getActivities(activityNumber);
 }, "getActivitiesAction");

@@ -47,6 +47,13 @@ export default function Nav() {
                 Home
               </NavLink>
               <NavLink
+                href="/news"
+                class="px-3 py-2 text-gray-800 font-medium rounded-md hover:bg-gray-100 transition"
+                activeClass="border-b-2 border-red-600 text-red-600"
+              >
+                News
+              </NavLink>
+              <NavLink
                 href="/new-activity"
                 class="px-3 py-2 text-gray-800 font-medium rounded-md hover:bg-gray-100 transition"
                 activeClass="border-b-2 border-red-600 text-red-600"

@@ -6,11 +6,8 @@ import { ActivityFiles } from "~/components/Activity/add_files";
 import { upsertActivityAction } from "~/lib/activity";
 import {
   createSignal,
-  Show,
   createResource,
   Suspense,
-  createEffect,
-  onMount,
 } from "solid-js";
 import MemberList from "~/components/User/MemberList";
 import Slide_1 from "~/components/Activity/Slide_1";

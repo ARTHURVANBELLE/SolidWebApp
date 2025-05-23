@@ -1,4 +1,5 @@
 import { createSignal, For } from "solid-js";
+import { NextButton } from "../NextButton";
 
 export interface StravaActivity {
   id: string;
@@ -42,60 +43,66 @@ export function ActivitySelector(props: ActivitySelectorProps) {
   };
 
   return (
-    <div class="activity-selector">
-      <h2>Select an Activity</h2>
-      <div class="activity-list">
+    <div class="max-w-6xl mx-auto p-4">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Select an Activity</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <For each={props.activities}>
           {(activity) => (
             <div 
-              class={`activity-card ${props.selectedActivityId === activity.id ? 'selected' : ''}`}
+              class={`rounded-lg shadow-md p-4 cursor-pointer transition-all duration-200 hover:shadow-lg 
+                ${props.selectedActivityId === activity.id 
+                  ? 'bg-blue-50 border-2 border-blue-500' 
+                  : 'bg-white border border-gray-200 hover:bg-gray-50'}`}
               onClick={() => props.onActivitySelected(activity.id)}
             >
-              <h3>{activity.name}</h3>
-              <div class="activity-details">
-                <div><strong>Type:</strong> {activity.type}</div>
-                <div><strong>Date:</strong> {formatDate(activity.start_date)}</div>
-                <div><strong>Distance:</strong> {formatDistance(activity.distance)}</div>
-                <div><strong>Time:</strong> {formatTime(activity.moving_time)}</div>
-                <div><strong>Elevation:</strong> {activity.total_elevation_gain}m</div>
+              <h3 class="text-lg font-semibold text-gray-800 mb-2 truncate">{activity.name}</h3>
+              <div class="space-y-1 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-600 font-medium">Type:</span> 
+                  <span class="text-gray-800">{activity.type}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600 font-medium">Date:</span> 
+                  <span class="text-gray-800">{formatDate(activity.start_date)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600 font-medium">Distance:</span> 
+                  <span class="text-gray-800">{formatDistance(activity.distance)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600 font-medium">Time:</span> 
+                  <span class="text-gray-800">{formatTime(activity.moving_time)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600 font-medium">Elevation:</span> 
+                  <span class="text-gray-800">{activity.total_elevation_gain}m</span>
+                </div>
               </div>
             </div>
           )}
         </For>
       </div>
-
-      <style>
-        {`
-        .activity-list {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 16px;
-          margin-top: 16px;
-        }
-        
-        .activity-card {
-          padding: 16px;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        
-        .activity-card:hover {
-          background-color: #f5f5f5;
-        }
-        
-        .activity-card.selected {
-          background-color: #e6f7ff;
-          border-color: #1890ff;
-        }
-        
-        .activity-details {
-          margin-top: 8px;
-          font-size: 0.9rem;
-        }
-        `}
-      </style>
+            {/* Bottom centered button with margin - unchanged */}
+            <div class="mt-10 flex justify-center w-full">
+              <NextButton 
+                type="button" 
+                class="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-8 py-3 rounded-lg font-medium shadow-md hover:from-sky-600 hover:to-blue-700 transition-all duration-200 flex items-center"
+              >
+                <span>Last Step (Pictures and GPX)</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 ml-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </NextButton>
+            </div>
     </div>
   );
 }

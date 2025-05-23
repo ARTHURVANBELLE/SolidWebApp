@@ -55,7 +55,7 @@ export default function Slider(props: SliderProps) {
 
       {loaded() && (
         <>
-          <button
+          {/* <button
             class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md hover:bg-white"
             onClick={prevSlide}
             aria-label="Previous slide"
@@ -73,7 +73,7 @@ export default function Slider(props: SliderProps) {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-          </button>
+          </button> */}
         </>
       )}
     </div>

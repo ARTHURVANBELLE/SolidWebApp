@@ -4,14 +4,23 @@ import Slide from "~/components/Slide";
 import Layout from "~/components/Layout";
 import { ActivityFiles } from "~/components/Activity/add_files";
 import { upsertActivityAction } from "~/lib/activity";
-import { createSignal, Show, createResource, Suspense, createEffect, onMount } from "solid-js";
+import {
+  createSignal,
+  Show,
+  createResource,
+  Suspense,
+  createEffect,
+  onMount,
+} from "solid-js";
 import MemberList from "~/components/User/MemberList";
 import Slide_1 from "~/components/Activity/Slide_1";
 import { getSessionData } from "~/utils/session";
 import { createAsync } from "@solidjs/router";
-import { ActivitySelector, StravaActivity } from "~/components/Activity/ActivitySelector";
+import {
+  ActivitySelector,
+  StravaActivity,
+} from "~/components/Activity/ActivitySelector";
 import { getStravaActivities } from "~/lib/stravaActivities";
-
 
 export default function NewActivity() {
   const session = createAsync(() => getSessionData());
@@ -20,8 +29,7 @@ export default function NewActivity() {
     () => session()?.accessToken,
     async (accessToken) => {
       if (!accessToken) return [];
-      const activities = await getStravaActivities(accessToken, 10);
-      console.log("Activities fetched:", activities);
+      const activities = await getStravaActivities(accessToken, 9);
       return activities;
     }
   );
@@ -47,11 +55,8 @@ export default function NewActivity() {
                 <MemberList />
               </Slide>
 
-              {/* Slide 3 - Only Session Data with Suspense */}
+              {/* Slide 3: Activity Selector */}
               <Slide>
-                <h2 class="text-2xl font-bold mb-4">Your Strava Activities</h2>
-
-                {/* Suspense for session and activities data */}
                 <Suspense
                   fallback={
                     <div class="flex justify-center items-center p-8">
@@ -81,12 +86,7 @@ export default function NewActivity() {
                   onGpxChange={(gpxUrl) => {}}
                   onImageChange={(imageUrl) => {}}
                 />
-                <TextInput
-                  name="description"
-                  type="text"
-                  placeholder="Activity description"
-                  required={false}
-                />
+
                 <button
                   type="submit"
                   class="bg-blue-600 text-white py-2 px-4 rounded transition"

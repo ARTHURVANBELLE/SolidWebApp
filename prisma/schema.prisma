@@ -24,6 +24,9 @@ model Activity {
   id       BigInt                 @unique
   title    String
   datetime  String
+  distance Float?
+  movingTime Int?
+  delegueId Int?
   description String?
   gpxUrl  String?
   imageUrl imageUrl[]

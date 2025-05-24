@@ -158,6 +158,21 @@ export const updateUser = async (formData: FormData) => {
   });
 };
 
+export const getTopUsers = query(async (limit: number) => {
+  "use server";
+  return db.user.findMany({
+    include: {
+      activities: true,
+    },
+    orderBy: {
+      activities: {
+        _count: "desc"
+      },
+    },
+    take: limit,
+  });
+}, "getTopUsers");
+
 export const updateUserAction = action(async (form: FormData) => {
   "use server";
   return await updateUser(form);

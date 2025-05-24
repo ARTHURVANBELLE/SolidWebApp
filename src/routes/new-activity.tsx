@@ -27,6 +27,7 @@ export default function NewActivity() {
     async (accessToken) => {
       if (!accessToken) return [];
       const activities = await getStravaActivities(accessToken, 9);
+      console.log("Fetched activities:", activities);
       return activities;
     }
   );

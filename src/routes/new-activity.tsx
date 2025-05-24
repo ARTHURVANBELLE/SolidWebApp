@@ -4,19 +4,12 @@ import Slide from "~/components/Slide";
 import Layout from "~/components/Layout";
 import { ActivityFiles } from "~/components/Activity/add_files";
 import { upsertActivityAction } from "~/lib/activity";
-import {
-  createSignal,
-  createResource,
-  Suspense,
-} from "solid-js";
+import { createSignal, createResource, Suspense } from "solid-js";
 import MemberList from "~/components/User/MemberList";
 import Slide_1 from "~/components/Activity/Slide_1";
 import { getSessionData } from "~/utils/session";
 import { createAsync } from "@solidjs/router";
-import {
-  ActivitySelector,
-  StravaActivity,
-} from "~/components/Activity/ActivitySelector";
+import { ActivitySelector } from "~/components/Activity/ActivitySelector";
 import { getStravaActivities } from "~/lib/stravaActivities";
 
 export default function NewActivity() {
@@ -27,7 +20,6 @@ export default function NewActivity() {
     async (accessToken) => {
       if (!accessToken) return [];
       const activities = await getStravaActivities(accessToken, 9);
-      console.log("Fetched activities:", activities);
       return activities;
     }
   );
@@ -35,7 +27,7 @@ export default function NewActivity() {
   const delegueId = () => {
     const userId = session()?.stravaId;
     return userId;
-  }
+  };
 
   return (
     <Layout protected={true}>

@@ -1,15 +1,8 @@
 import Layout from "~/components/Layout";
-import {getUser, getSessionData} from "../utils/session";
-import { createAsync } from "@solidjs/router";
 import pelotonImage from "~/assets/image/large_peloton.jpg";
 
 
 export default function Home() {
-    const user = createAsync(() => getUser());
-
-    const session = createAsync(() => getSessionData());
-    console.log(session());
-
   return (
     <Layout protected={true}>
       <main class="text-center mx-auto text-gray-700 p-4">

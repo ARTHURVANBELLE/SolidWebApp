@@ -1,5 +1,3 @@
-import {action} from "@solidjs/router"
-
 /**
  * Fetches the latest activities from Strava via our API
  * @param accessToken Strava access token
@@ -10,9 +8,6 @@ export async function getStravaActivities(accessToken: string, count: number = 1
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-    console.log("Fetching Strava activities with count:", count);
-    console.log("Access Token _______ :", accessToken);
     
     // Check if window is defined (browser environment)
     const baseUrl = typeof window !== 'undefined' 

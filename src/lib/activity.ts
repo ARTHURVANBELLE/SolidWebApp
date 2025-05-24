@@ -23,9 +23,6 @@ export const upsertActivity = async (formData: FormData) => {
     activityId: z.number(),
   });
 
-  console.log("Form Data:", formData);
-  console.log("Users in form:", formData.getAll("users"));
-
   const activitySchema = z.object({
     id: z.string(),
     title: z.string(),
@@ -62,11 +59,9 @@ export const upsertActivity = async (formData: FormData) => {
       .filter(userId => {
         // Filter out empty strings, null, and undefined values
         const value = userId?.toString().trim();
-        console.log("User value before filtering:", value);
         return value !== null && value !== undefined && value !== '';
       })
       .map(userId => {
-        console.log("Processing user:", userId.toString());
         // Try to parse the value, which could be a JSON string
         try {
           const userIdStr = userId.toString().trim();
@@ -74,26 +69,20 @@ export const upsertActivity = async (formData: FormData) => {
           // First try to parse as JSON
           if (userIdStr.startsWith('{') && userIdStr.endsWith('}')) {
             const userObj = JSON.parse(userIdStr);
-            console.log("Parsed user object:", userObj);
             const id = parseInt(userObj.userId || userObj.id);
-            console.log("User ID after parsing JSON:", id);
             return { userId: isNaN(id) ? undefined : id };
           } else {
             // If not JSON format, parse directly as number
             const id = parseInt(userIdStr);
-            console.log("User ID after direct parsing:", id);
             return { userId: isNaN(id) ? undefined : id };
           }
         } catch (e) {
-          console.log("Parsing failed:", e);
           // If all parsing fails, try direct number parsing as fallback
           const id = parseInt(userId.toString());
-          console.log("Fallback - User ID after direct parsing:", id);
           return { userId: isNaN(id) ? undefined : id };
         }
       })
       .filter(user => {
-        console.log("User object after mapping:", user);
         return user.userId !== undefined;
       }),
     comments: (() => {
@@ -112,9 +101,6 @@ export const upsertActivity = async (formData: FormData) => {
   });
 
   const activityInfo = activitySchema.parse(updatedActivity);
-
-  console.log("Parsed Activity Info:", activityInfo);
-  console.log("Users after parsing:", activityInfo.users);
   
   return db.activity.upsert({
     where: { id: parseInt(activityInfo.id) },

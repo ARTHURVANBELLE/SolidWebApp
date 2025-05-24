@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "@solidjs/router";
 import { NavLink } from "./Navlink";
-import { Show, createSignal } from "solid-js";
+import { Show } from "solid-js";
 import { createAsync } from "@solidjs/router";
 import { getUser, logout } from "~/utils/session";
 import logo from "~/assets/image/image.png";
@@ -9,15 +9,10 @@ export default function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
   const user = createAsync(() => getUser());
-  const [isMenuOpen, setIsMenuOpen] = createSignal(false);
 
   const handleLogout = async () => {
     logout();
     navigate("/login");
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen());
   };
 
   return (

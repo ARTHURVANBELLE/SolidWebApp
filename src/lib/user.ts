@@ -65,9 +65,6 @@ export const addUser = async (formData: FormData) => {
 
 export const updateUser = async (formData: FormData) => {
   "use server";
-
-  console.log("Form Data:", formData);
-
   // Parse and validate the incoming data
   const userSchema = z.object({
     firstName: z.string().optional(),
@@ -159,7 +156,6 @@ export const updateUser = async (formData: FormData) => {
 
 export const getTopUsers = query(async (limit: number) => {
   "use server";
-  console.log("Top users fetched");
   return db.user.findMany({
     select: {
       stravaId: true,

@@ -28,9 +28,12 @@ export async function getSessionData() {
 export const login = async () => {
   "use server";
   const state = generateState();
-  // The current scope is ["activity:write", "read"] but we need "activity:read_all" 
-  // to read all activities
-  const url = strava.createAuthorizationURL(state, ["activity:write", "activity:read_all", "read"]);
+  const baseUrl = strava.createAuthorizationURL(state, ["activity:write", "activity:read_all", "read"]);
+  
+  // Add approval_prompt=force to the URL
+  const url = new URL(baseUrl.toString());
+  url.searchParams.set("approval_prompt", "force");
+  
   const session = await getSession();
   await session.update({ state });
   throw redirect(url.toString());

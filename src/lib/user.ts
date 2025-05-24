@@ -68,7 +68,6 @@ export const updateUser = async (formData: FormData) => {
 
   console.log("Form Data:", formData);
 
-  
   // Parse and validate the incoming data
   const userSchema = z.object({
     firstName: z.string().optional(),
@@ -90,32 +89,32 @@ export const updateUser = async (formData: FormData) => {
 
   // Prepare update data object, omitting empty fields
   const updateData: Record<string, any> = {};
-  
+
   // Only include non-empty fields
   if (formData.get("firstName")?.toString().trim()) {
     updateData.firstName = formData.get("firstName")?.toString().trim();
   }
-  
+
   if (formData.get("lastName")?.toString().trim()) {
     updateData.lastName = formData.get("lastName")?.toString().trim();
   }
-  
+
   if (formData.get("email")?.toString().trim()) {
     updateData.email = formData.get("email")?.toString().trim();
   }
-  
+
   if (formData.get("teamId")?.toString().trim()) {
     updateData.teamId = Number(formData.get("teamId"));
   }
-  
+
   if (formData.get("imageUrl")?.toString().trim()) {
     updateData.imageUrl = formData.get("imageUrl")?.toString().trim();
   }
-  
+
   if (formData.get("accessToken")?.toString().trim()) {
     updateData.accessToken = formData.get("accessToken")?.toString().trim();
   }
-  
+
   // Handle password specially since it requires hashing
   if (formData.get("password")?.toString().trim()) {
     updateData.password = await bcrypt.hash(
@@ -123,7 +122,7 @@ export const updateUser = async (formData: FormData) => {
       10
     );
   }
-  
+
   // Handle isAdmin checkbox
   const isAdminValue = formData.get("isAdmin");
   if (isAdminValue !== null) {
@@ -160,13 +159,26 @@ export const updateUser = async (formData: FormData) => {
 
 export const getTopUsers = query(async (limit: number) => {
   "use server";
+  console.log("Top users fetched");
   return db.user.findMany({
-    include: {
-      activities: true,
+    select: {
+      stravaId: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      imageUrl: true,
+      teamId: true,
+      isAdmin: true,
+      _count: {
+        select: { activities: true }  // This adds the count of activities
+      },
+      activities: {
+        select: { activityId: true }  // Include minimal activity info if needed
+      }
     },
     orderBy: {
       activities: {
-        _count: "desc"
+        _count: "desc",
       },
     },
     take: limit,
@@ -181,5 +193,4 @@ export const updateUserAction = action(async (form: FormData) => {
 export const addUserAction = action(async (form: FormData) => {
   "use server";
   return await addUser(form);
-}
-, "addUserAction");
+}, "addUserAction");

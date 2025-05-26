@@ -24,13 +24,15 @@ export async function GET(event: APIEvent) {
 
   // Get token and use it to get the user's info
   const tokens = await strava.validateAuthorizationCode(code);
+  const accessToken = tokens.accessToken();
+  const refreshToken = tokens.refreshToken();
   
   // Update the session with the access and refresh tokens
-  await updateSessionTokens(tokens.accessToken(), tokens.refreshToken());
+  await updateSessionTokens(accessToken, refreshToken);
   
   const response = await fetch("https://www.strava.com/api/v3/athlete", {
     headers: {
-      Authorization: `Bearer ${tokens.accessToken()}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   const user = await response.json();
@@ -42,7 +44,10 @@ export async function GET(event: APIEvent) {
   // Upsert the user to the database
   await db.user.upsert({
     where: { stravaId: userInfo.id },
-    update: {},
+    update: {
+      accessToken,
+      refreshToken,
+    },
     create: {
       firstName: userInfo.firstname,
       lastName: userInfo.lastname,
@@ -50,18 +55,13 @@ export async function GET(event: APIEvent) {
       password: "",
       email: "",
       imageUrl: userInfo.profile,
-      accessToken: tokens.accessToken(),
+      accessToken,
+      refreshToken,
     },
   });
-
-  await db.user.update({
-    where: { stravaId: userInfo.id },
-    data: {
-      accessToken: tokens.accessToken(),
-    },
-  })
- // Update the session
- await session.update({
+ 
+  // Update the session
+  await session.update({
     state: undefined,
     stravaId: userInfo.id,
   })

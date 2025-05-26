@@ -46,6 +46,7 @@ model User {
   activities ActivitiesOnUsers[]
   team       Team?               @relation(fields: [teamId], references: [id])
   accessToken String?
+  refreshToken String?
 }
 
 model imageUrl {

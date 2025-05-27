@@ -3,12 +3,11 @@ import { z } from "zod";
 import { db } from "~/lib/db";
 import { getSession, updateSessionTokens } from "~/utils/session";
 import { strava } from "~/utils/strava";
-import { applyCors } from "~/utils/cors";
+import { applyCors, handleCorsPreflightRequest } from "~/utils/cors";
 
 const requestSchema = z.object({
   code: z.string(),
   state: z.string(),
-  source: z.enum(['web', 'mobile']).default('web'),
 });
 
 const profileSchema = z.object({
@@ -23,18 +22,18 @@ export async function POST(event: APIEvent) {
   try {
     // Parse and validate the request body
     const body = await event.request.json();
-    const { code, state, source } = requestSchema.parse(body);
+    const { code, state } = requestSchema.parse(body);
     
     // Verify state from session for CSRF protection
     const session = await getSession();
     const { state: storedState } = session.data;
     
     if (!storedState || state !== storedState) {
-      const errorResponse = new Response(
+      const response = new Response(
         JSON.stringify({ error: "Invalid state parameter" }), 
         { status: 400, headers: { "Content-Type": "application/json" }}
       );
-      return source === 'mobile' ? applyCors(event, errorResponse) : errorResponse;
+      return applyCors(event, response);
     }
     
     // Get token using Arctic instead of Strava OAuth2
@@ -47,7 +46,7 @@ export async function POST(event: APIEvent) {
     
     const response = await fetch("https://www.strava.com/api/v3/athlete", {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken()}`,
       },
     });
     
@@ -86,8 +85,7 @@ export async function POST(event: APIEvent) {
       stravaId: userInfo.id,
     });
     
-    // Create response based on source
-    const responseData = {
+    const responseBody = JSON.stringify({
       access_token: accessToken(),
       refresh_token: refreshToken(),
       user: {
@@ -96,37 +94,25 @@ export async function POST(event: APIEvent) {
         lastName: userInfo.lastname,
         profile: userInfo.profile,
       }
-    };
+    });
     
-    const successResponse = new Response(JSON.stringify(responseData), {
+    const successResponse = new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" }
     });
     
-    // Apply CORS headers for mobile requests
-    return source === 'mobile' ? applyCors(event, successResponse) : successResponse;
+    return applyCors(event, successResponse);
   } catch (error) {
     console.error("Error processing Strava callback:", error);
     const errorResponse = new Response(
       JSON.stringify({ error: "Authentication failed" }), 
       { status: 400, headers: { "Content-Type": "application/json" }}
     );
-    
-    // Use source from the original request body if possible
-    let isMobileRequest = false;
-    try {
-      const body = await event.request.json();
-      isMobileRequest = body.source === 'mobile';
-    } catch {
-      // If we can't parse the body, assume it's not a mobile request
-    }
-    return isMobileRequest ? applyCors(event, errorResponse) : errorResponse;
+    return applyCors(event, errorResponse);
   }
 }
 
 // Add OPTIONS handler for CORS preflight requests
 export async function OPTIONS(event: APIEvent) {
-  // Import and use the handleCorsPreflightRequest utility
-  const { handleCorsPreflightRequest } = await import("~/utils/cors");
   return handleCorsPreflightRequest(event);
 }

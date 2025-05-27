@@ -4,11 +4,9 @@ import { type APIEvent } from "@solidjs/start/server";
 // Include both web and mobile app URIs
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://localhost:8080',
+  'http://localhost:8081',
   'capacitor://',
   'http://localhost',
-  // Add your production domains here
-  'https://yourdomain.com'
 ];
 
 export function applyCors(event: APIEvent, response: Response): Response {
@@ -47,7 +45,7 @@ export function handleCorsPreflightRequest(event: APIEvent): Response | null {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Max-Age': '86400', // 24 hours
+        'Access-Control-Max-Age': '86400',
         'Access-Control-Allow-Credentials': 'true',
       }
     });

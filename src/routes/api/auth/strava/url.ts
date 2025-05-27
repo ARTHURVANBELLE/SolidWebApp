@@ -2,9 +2,10 @@ import { type APIEvent } from "@solidjs/start/server";
 import { z } from "zod";
 import { strava } from "~/utils/strava";
 import { getSession } from "~/utils/session";
+import { applyCors, handleCorsPreflightRequest } from "~/utils/cors";
 
 const requestSchema = z.object({
-  redirect_uri: z.string().url()
+  redirect_uri: z.string().url(),
 });
 
 export async function POST(event: APIEvent) {
@@ -12,20 +13,54 @@ export async function POST(event: APIEvent) {
     // Parse and validate the request body
     const body = await event.request.json();
     const { redirect_uri } = requestSchema.parse(body);
-    
+
     // Generate a state parameter for CSRF protection
     const state = crypto.randomUUID();
-    
+
     // Store state in session
     const session = await getSession();
     await session.update({ state });
-    
+
     // Generate the authorization URL
-    const url = strava.createAuthorizationURL(state, ["profile:read_all", "activity:read"]);
-    
-    return new Response(JSON.stringify({ url }));
+    const url = strava.createAuthorizationURL(state, [
+      "profile:read_all",
+      "activity:read",
+    ]);
+
+    console.log("Generated Strava auth URL:", url.toString());
+    // Append redirect_uri to the URL
+    const urlObj = new URL(url.toString());
+    urlObj.searchParams.set("redirect_uri", redirect_uri);
+
+    // Create response with CORS headers using the utility function
+    const response = new Response(JSON.stringify({ url: urlObj.toString() }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Apply CORS headers using the utility
+    return applyCors(event, response);
   } catch (error) {
     console.error("Error generating Strava auth URL:", error);
-    return new Response(JSON.stringify({ error: "Failed to generate authentication URL" }), { status: 400 });
+
+    const response = new Response(
+      JSON.stringify({ error: "Failed to generate authentication URL" }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Apply CORS headers using the utility
+    return applyCors(event, response);
   }
+}
+
+// Add OPTIONS handler for CORS preflight requests
+export async function OPTIONS(event: APIEvent) {
+  // Handle CORS preflight request using the utility
+  return handleCorsPreflightRequest(event);
 }

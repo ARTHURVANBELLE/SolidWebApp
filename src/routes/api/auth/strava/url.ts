@@ -8,18 +8,31 @@ const requestSchema = z.object({
   redirect_uri: z.string().url(),
 });
 
+const urlRequestSchema = requestSchema.extend({
+  platform: z.string(),
+  session_id: z.string().optional(),
+});
+
 export async function POST(event: APIEvent) {
   try {
     // Parse and validate the request body
     const body = await event.request.json();
-    const { redirect_uri } = requestSchema.parse(body);
+    const { redirect_uri, platform, session_id } = urlRequestSchema.parse(body);
 
     // Generate a state parameter for CSRF protection
     const state = crypto.randomUUID();
 
     // Store state in session
     const session = await getSession();
-    await session.update({ state });
+    await session.update({
+      state: state,
+      authRequestData: {
+        redirect_uri,
+        platform,
+        session_id: session_id || state, // Use session_id if provided, otherwise use state
+        timestamp: Date.now(),
+      },
+    });
 
     // Generate the authorization URL
     const url = strava.createAuthorizationURL(state, [

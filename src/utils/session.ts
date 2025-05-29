@@ -10,6 +10,8 @@ type SessionData = {
   stravaId?: number;
   accessToken?: string;
   refreshToken?: string;
+  authRequestData?: any;
+  stravaSessionId?: string;
 };
 
 export function getSession() {

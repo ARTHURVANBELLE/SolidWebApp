@@ -1,10 +1,6 @@
 import { type APIEvent } from "@solidjs/start/server";
-import { getActivities } from "~/lib/activity";
+import { getTeams } from "~/lib/team";
 import { applyCors, handleCorsPreflightRequest } from "~/utils/cors";
-import { replaceBigInt } from "~/utils/json-helpers";
-
-
-
 
 export async function GET(event: APIEvent) {
   // Handle CORS for all responses
@@ -21,34 +17,22 @@ export async function OPTIONS(event: APIEvent) {
 async function handleGetRequest(event: APIEvent) {
   try {
     const url = new URL(event.request.url);
-    const activityNumber = url.searchParams.get("activityNumber");
-    if (!activityNumber) {
-      return new Response(
-        JSON.stringify({ error: "activityNumber is required" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-    const activities = await getActivities(parseInt(activityNumber));
-    if (!activities || activities.length === 0) {
-      return new Response(JSON.stringify({ error: "No activities found" }), {
+
+    const teams = await getTeams();
+    if (!teams || teams.length === 0) {
+      return new Response(JSON.stringify({ error: "No teams found" }), {
         status: 404,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Before returning the response, convert any BigInt values
-    const activitiesData = replaceBigInt(activities);
-
-    return new Response(JSON.stringify(activitiesData), {
+    return new Response(JSON.stringify(teams), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Failed to fetch activities:", error);
+    console.error("Failed to fetch teams:", error);
     return new Response(
-      JSON.stringify({ error: "Failed to fetch activities" }),
+      JSON.stringify({ error: "Failed to fetch teams" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },

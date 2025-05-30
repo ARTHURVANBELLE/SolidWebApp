@@ -2,12 +2,24 @@ import { type APIEvent } from "@solidjs/start/server";
 import { z } from "zod";
 import { db } from "~/lib/db";
 import { getSession, updateSessionTokens } from "~/utils/session";
+import { applyCors, handleCorsPreflightRequest } from "~/utils/cors";
+
 
 const requestSchema = z.object({
   refresh_token: z.string()
 });
 
 export async function POST(event: APIEvent) {
+  const response = await handlePostRequest(event);
+  return applyCors(event,response);
+}
+
+// Add OPTIONS handler for CORS preflight requests
+export async function OPTIONS(event: APIEvent) {
+  return handleCorsPreflightRequest(event);
+}
+
+async function handlePostRequest(event: APIEvent) {
   try {
     // Parse and validate the request body
     const body = await event.request.json();

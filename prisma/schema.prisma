@@ -21,17 +21,17 @@ model Team {
 }
 
 model Activity {
-  id       BigInt                 @unique
-  title    String
-  datetime  String
-  distance Float?
-  movingTime Int?
-  delegueId Int?
+  id          BigInt              @unique
+  title       String
+  datetime    String
   description String?
-  gpxUrl  String?
-  imageUrl imageUrl[]
-  users    ActivitiesOnUsers[]
-  comments Comment[]
+  gpxUrl      String?
+  delegueId   Int?
+  distance    Float?
+  movingTime  Int?
+  users       ActivitiesOnUsers[]
+  comments    Comment[]
+  imageUrl    imageUrl[]
 }
 
 model User {
@@ -42,11 +42,18 @@ model User {
   password   String
   teamId     Int?
   imageUrl   String?
-  isAdmin    Boolean?           @default(false)
+  isAdmin    Boolean?            @default(false)
   activities ActivitiesOnUsers[]
   team       Team?               @relation(fields: [teamId], references: [id])
-  accessToken String?
-  refreshToken String?
+  token      token?
+}
+
+model token {
+  id          Int    @id @default(autoincrement())
+  userId      Int    @unique
+  jwt         String
+  accessToken String
+  user        User   @relation(fields: [userId], references: [stravaId])
 }
 
 model imageUrl {
@@ -59,8 +66,8 @@ model imageUrl {
 model ActivitiesOnUsers {
   userId     Int
   activityId BigInt
-  activity   Activity @relation(fields: [activityId], references: [id])
   user       User     @relation(fields: [userId], references: [stravaId])
+  activity   Activity @relation(fields: [activityId], references: [id])
 
   @@id([userId, activityId])
 }

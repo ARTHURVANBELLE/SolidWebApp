@@ -3,6 +3,14 @@ import { z } from "zod";
 import { action, query } from "@solidjs/router";
 import bcrypt from "bcrypt";
 
+export interface UserInterface {
+  stravaId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl?: string;
+}
+
 export const getUsers = query(async () => {
   "use server";
   return db.user.findMany();
@@ -32,7 +40,6 @@ export const addUser = async (formData: FormData) => {
     imageUrl: z.string().optional(),
     stravaId: z.coerce.number(),
     isAdmin: z.coerce.boolean().optional(),
-    accessToken: z.string().optional(),
     password: z
       .string()
       .min(8)
@@ -48,7 +55,6 @@ export const addUser = async (formData: FormData) => {
     password: formData.get("password"),
     imageUrl: formData.get("imageUrl"),
     stravaId: formData.get("stravaId"),
-    accessToken: formData.get("accessToken"),
     isAdmin: formData.get("isAdmin") === "on",
   });
   // Check if the user already exists
@@ -63,6 +69,23 @@ export const addUser = async (formData: FormData) => {
   });
 };
 
+export const upsertUser = async (user: UserInterface) => {
+  "use server";
+  await db.user.upsert({
+    where: { stravaId: user.stravaId },
+    update: {},
+    create: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      stravaId: user.stravaId,
+      password: "",
+      isAdmin:false,
+      email: user.email || "",
+      imageUrl: user.imageUrl || "",
+    },
+  });
+};
+
 export const updateUser = async (formData: FormData) => {
   "use server";
   // Parse and validate the incoming data
@@ -74,7 +97,6 @@ export const updateUser = async (formData: FormData) => {
     imageUrl: z.string().optional(),
     stravaId: z.coerce.number(),
     isAdmin: z.coerce.boolean().optional(),
-    accessToken: z.string().optional(),
     password: z
       .string()
       .min(8)
@@ -106,10 +128,6 @@ export const updateUser = async (formData: FormData) => {
 
   if (formData.get("imageUrl")?.toString().trim()) {
     updateData.imageUrl = formData.get("imageUrl")?.toString().trim();
-  }
-
-  if (formData.get("accessToken")?.toString().trim()) {
-    updateData.accessToken = formData.get("accessToken")?.toString().trim();
   }
 
   // Handle password specially since it requires hashing
@@ -166,11 +184,11 @@ export const getTopUsers = query(async (limit: number) => {
       teamId: true,
       isAdmin: true,
       _count: {
-        select: { activities: true }  // This adds the count of activities
+        select: { activities: true }, // This adds the count of activities
       },
       activities: {
-        select: { activityId: true }  // Include minimal activity info if needed
-      }
+        select: { activityId: true }, // Include minimal activity info if needed
+      },
     },
     orderBy: {
       activities: {

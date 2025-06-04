@@ -63,8 +63,6 @@ export async function GET(event: APIEvent) {
         firstName: true,
         lastName: true,
         imageUrl: true,
-        accessToken: true,
-        refreshToken: true,
       }
     });
     
@@ -75,16 +73,10 @@ export async function GET(event: APIEvent) {
       return createAuthResponse(event, false, null, format, "User not found");
     }
     
-    // Determine token expiration
-    const currentTime = new Date().getTime();
-    const expiresAt = currentTime + (6 * 60 * 60 * 1000); // 6 hours from now
     
     // Create auth data object
     const authData = {
       isAuthenticated: true,
-      access_token: user.accessToken,
-      refresh_token: user.refreshToken,
-      expires_at: Math.floor(expiresAt / 1000),
       user: {
         id: user.stravaId,
         firstName: user.firstName,

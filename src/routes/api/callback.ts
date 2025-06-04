@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "~/lib/db";
 import { getSession, updateSessionTokens } from "~/utils/session";
 import { strava } from "~/utils/strava";
+import { upsertUser } from "~/lib/user";
 
 const profileSchema = z.object({
   firstname: z.string(),
@@ -26,10 +27,10 @@ export async function GET(event: APIEvent) {
   const tokens = await strava.validateAuthorizationCode(code);
   const accessToken = tokens.accessToken();
   const refreshToken = tokens.refreshToken();
-  
+
   // Update the session with the access and refresh tokens
   await updateSessionTokens(accessToken, refreshToken);
-  
+
   const response = await fetch("https://www.strava.com/api/v3/athlete", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -42,31 +43,21 @@ export async function GET(event: APIEvent) {
   console.log(userInfo);
 
   // Upsert the user to the database
-  await db.user.upsert({
-    where: { stravaId: userInfo.id },
-    update: {
-      accessToken,
-      refreshToken,
-    },
-    create: {
-      firstName: userInfo.firstname,
-      lastName: userInfo.lastname,
-      stravaId: userInfo.id,
-      password: "",
-      email: "",
-      imageUrl: userInfo.profile,
-      accessToken,
-      refreshToken,
-    },
+  await upsertUser({
+    firstName: user.firstname,
+    lastName: user.lastname,
+    stravaId: user.id,
+    email: user.email || "",
+    imageUrl: user.profile,
   });
- 
+
   // Update the session
   await session.update({
     state: undefined,
     stravaId: userInfo.id,
-  })
+  });
   return new Response(null, {
     status: 302,
-    headers: { Location: '/' },
-  })
+    headers: { Location: "/" },
+  });
 }

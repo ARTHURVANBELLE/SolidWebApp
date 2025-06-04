@@ -29,8 +29,6 @@ export function createStravaAuthUrl(
   // Use the provided redirect URI or fall back to the default one
   const redirectUri = customRedirectUri || stravaRedirectUri;
 
-  console.log(`Creating Strava auth URL with redirect: ${redirectUri}`);
-
   try {
     // Use the Strava instance to create the authorization URL
     return strava.createAuthorizationURL(state, scopes, redirectUri);

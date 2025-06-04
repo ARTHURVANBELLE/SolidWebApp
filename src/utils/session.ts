@@ -48,13 +48,13 @@ export const logout = async () => {
   return redirect("/index"); 
 }
 
-export const updateSessionTokens = async (accessToken: string, refreshToken: string) => {
+export const updateSessionTokens = async (accessToken: string) => {
   "use server";
   const session = await getSession();
   await session.update({
     accessToken,
-    refreshToken
-  });
+    refreshToken: ""
+    });
   return true;
 };
 

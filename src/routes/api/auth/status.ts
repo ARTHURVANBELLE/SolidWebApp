@@ -2,6 +2,7 @@ import { type APIEvent } from "@solidjs/start/server";
 import { db } from "~/lib/db";
 import { getSession } from "~/utils/session";
 import { applyCors, handleCorsPreflightRequest } from "~/utils/cors";
+import { validateAccessToken } from "~/utils/jwt";
 
 // Debug function to log important information
 function debugLog(title: string, data: Record<string, any>) {
@@ -74,7 +75,26 @@ export async function GET(event: APIEvent) {
     }
     
     
-    // Create auth data object
+    // Check if we have a JWT token in the Authorization header
+    const authHeader = event.request.headers.get('Authorization');
+    let stravaAccessToken: string | undefined;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const payload = validateAccessToken(token);
+      
+      if (payload) {
+        debugLog("JWT Token Info", {
+          userId: payload.userId,
+          hasAccessToken: !!payload.accessToken
+        });
+        
+        // Extract Strava access token if available
+        stravaAccessToken = payload.accessToken;
+      }
+    }
+    
+    // Create auth data object with access token if available
     const authData = {
       isAuthenticated: true,
       user: {
@@ -83,6 +103,8 @@ export async function GET(event: APIEvent) {
         lastName: user.lastName,
         profile: user.imageUrl
       },
+      // Include the access token if we have it
+      accessToken: stravaAccessToken,
       // FIXED: Use the correct session_id from authRequestData
       session_id: storedSessionId || session.id
     };

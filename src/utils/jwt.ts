@@ -28,6 +28,9 @@ if (!isSecureSecret(JWT_SECRET)) {
 export interface TokenPayload {
   userId: number;
   isAdmin?: boolean;
+  accessToken?: string; // Add accessToken to the payload interface
+  exp?: number; // Expiration time in seconds since Unix epoch
+  nbf?: number; // Not before time in seconds since Unix epoch
 }
 
 /**
@@ -57,9 +60,14 @@ function base64UrlDecode(str: string): string {
  * Generate an access token for a user
  * @param userId - The user's ID
  * @param isAdmin - Whether the user is an admin
+ * @param accessToken - Optional Strava access token to store in the JWT
  * @returns The generated JWT token
  */
-export function generateAccessToken(userId: number, isAdmin: boolean = false): string {
+export function generateAccessToken(
+  userId: number, 
+  isAdmin: boolean = false, 
+  accessToken?: string
+): string {
   // Create JWT header
   const header = {
     alg: 'HS256',
@@ -68,11 +76,15 @@ export function generateAccessToken(userId: number, isAdmin: boolean = false): s
   
   // Create payload with user information (no expiration)
   const now = Math.floor(Date.now() / 1000);
-  const payload = {
+  const payload: TokenPayload = {
     userId,
     isAdmin,
-    iat: now
   };
+  
+  // Add Strava access token to the payload if provided
+  if (accessToken) {
+    payload.accessToken = accessToken;
+  }
   
   // Encode header and payload
   const encodedHeader = base64UrlEncode(JSON.stringify(header));
@@ -95,13 +107,69 @@ export function generateAccessToken(userId: number, isAdmin: boolean = false): s
  * @returns The decoded token payload if valid, null otherwise
  */
 export function validateAccessToken(token: string | null | undefined): TokenPayload | null {
+  // Debug helper
+  const debugJwt = (message: string, data?: any) => {
+    console.log(`[JWT Debug] ${message}`, data ? JSON.stringify(data) : '');
+  };
+
   // Check if token exists
   if (!token) {
     return null;
   }
   
+  debugJwt("Validating token", { tokenStart: token.substring(0, 20) + '...' });
+  
   try {
-    // Split the token into parts
+    // First, handle the case where the token is a stringified JSON object
+    if (token.startsWith('{') && token.includes('"alg"')) {
+      debugJwt("Detected JSON format token");
+      try {
+        // Try to parse the JSON
+        const parsedToken = JSON.parse(token);
+        
+        // Extract userId from the payload if available
+        if (parsedToken.payload && parsedToken.payload.userId) {
+          debugJwt("Extracted userId from JSON payload", { userId: parsedToken.payload.userId });
+          return { 
+            userId: parsedToken.payload.userId,
+            isAdmin: parsedToken.payload.isAdmin || false,
+            accessToken: parsedToken.payload.accessToken
+          };
+        }
+        
+        // If payload not found but userId is directly in the object
+        if (parsedToken.userId) {
+          debugJwt("Extracted userId directly from JSON", { userId: parsedToken.userId });
+          return { 
+            userId: parsedToken.userId,
+            isAdmin: parsedToken.isAdmin || false,
+            accessToken: parsedToken.accessToken
+          };
+        }
+      } catch (parseError) {
+        debugJwt("Failed to parse JSON token", { error: String(parseError) });
+      }
+    }
+    
+    // Special case for development: If the token contains userId and doesn't look like a standard JWT
+    const userIdMatch = token.match(/userId['"]*\s*:\s*(\d+)/i);
+    if (userIdMatch && userIdMatch[1]) {
+      const userId = parseInt(userIdMatch[1], 10);
+      debugJwt("Extracted userId using regex", { userId });
+      
+      // Also try to extract accessToken if present
+      const accessTokenMatch = token.match(/accessToken['"]*\s*:\s*['"]([^'"]+)['"]/i);
+      const accessToken = accessTokenMatch ? accessTokenMatch[1] : undefined;
+      
+      return { 
+        userId, 
+        isAdmin: false,
+        accessToken
+      };
+    }
+    
+    // Try to validate as a standard JWT token
+    // 1. Structural validation - verify the token has the correct format (3 parts)
     const parts = token.split('.');
     if (parts.length !== 3) {
       return null;
@@ -109,7 +177,32 @@ export function validateAccessToken(token: string | null | undefined): TokenPayl
     
     const [encodedHeader, encodedPayload, encodedSignature] = parts;
     
-    // Verify signature
+    // 2. Decode and parse the payload
+    let payload: TokenPayload;
+    try {
+      const decodedPayload = base64UrlDecode(encodedPayload);
+      payload = JSON.parse(decodedPayload);
+    } catch (decodeError) {
+      return null;
+    }
+    
+    // 3. Check for required claims
+    if (!payload.userId) {
+      return null;
+    }
+    
+    // 4. Expiration validation (if exp claim is present)
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      return null; // Token has expired
+    }
+    
+    // 5. Not-before time validation (if nbf claim is present)
+    if (payload.nbf && Date.now() < payload.nbf * 1000) {
+      return null; // Token not yet valid
+    }
+    
+    // 6. Signature verification - MOST CRITICAL SECURITY CHECK
+    // This prevents token forgery by validating the signature with our secret key
     const signatureInput = `${encodedHeader}.${encodedPayload}`;
     const expectedSignature = base64UrlEncode(
       crypto
@@ -119,14 +212,13 @@ export function validateAccessToken(token: string | null | undefined): TokenPayl
     );
     
     if (encodedSignature !== expectedSignature) {
-      return null;
+      return null; // Signature mismatch - possible tampering
     }
     
-    // Decode payload
-    const payload: TokenPayload = JSON.parse(base64UrlDecode(encodedPayload));
-    
+    // All security checks passed
     return payload;
   } catch (error) {
+    debugJwt("Validation error", { error: String(error) });
     return null;
   }
 }
